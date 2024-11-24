@@ -1,25 +1,74 @@
-import React from "react";
+import React, { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import LayoutDefault from "../layout/LayoutDefault";
-import HomePage from "../screens/HomePage";
-import ProductPage from "../screens/ProductPage";
-import DetailProductPage from "../screens/DetailProductPage";
-import NotFoundPage from "../screens/NotFoundPage";
+import useLoadingStore from "../redux/store/loading.store";
+import Loading from "../components/loading/Loading";
+const LayoutDefault = lazy(() => import("../layout/LayoutDefault"));
+const HomePage = lazy(() => import("../screens/HomePage"));
+const ProductPage = lazy(() => import("../screens/product/ProductPage"));
+const DetailProductPage = lazy(
+    () => import("../screens/product/DetailProductPage")
+);
+const NotFoundPage = lazy(() => import("../screens/NotFoundPage"));
+const LoginPage = lazy(() => import("../screens/authentication/LoginPage"));
+const SignUpPage = lazy(() => import("../screens/authentication/SignUpPage"));
+const ProfilePage = lazy(() => import("../screens/profile/ProfilePage"));
+const ForgotPassword = lazy(
+    () => import("../screens/authentication/ForgotPassword")
+);
+const CheckoutPage = lazy(() => import("../screens/cart/CheckoutPage"));
+const Cart = lazy(() => import("../screens/cart/Cart"));
+const OrderHistory = lazy(() => import("../screens/profile/OrderHistory"));
+const ChangePassword = lazy(() => import("../screens/profile/ChangePassword"));
+const AboutPage = lazy(() => import("../screens/AboutPage"));
 
 const DeclareRouter = () => {
-  return (
-    <Routes>
-      {/* Router of Login */}
-      {/* Router of Register */}
-      {/* Router of Home */}
-
-      <Route element={<LayoutDefault />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product" element={<ProductPage />} />
-        <Route path="/product/:slug" element={<DetailProductPage />} />
-      </Route>
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
+    const loading = useLoadingStore((state) => state.loading);
+    return (
+        <>
+            {loading && <Loading />}
+            <Routes>
+                {/* Router of Login */}
+                <Route path="/login" element={<LoginPage />} />
+                {/* Router of Register */}
+                <Route path="/sign-up" element={<SignUpPage />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route element={<LayoutDefault />}>
+                    {/* Router of Home */}
+                    <Route path="/" element={<HomePage />} />
+                    {/* Router of Product */}
+                    <Route path="/product" element={<ProductPage />} />
+                    {/* Router of Product Detail*/}
+                    <Route
+                        path="/product/:slug"
+                        element={<DetailProductPage />}
+                    />
+                    {/* Router of Cart*/}
+                    <Route path="/cart" element={<Cart />} />
+                    {/* Router of Order*/}
+                    <Route path="/order" element={<CheckoutPage />} />
+                    {/* Router of Profile*/}
+                    <Route
+                        path="/profile/:username"
+                        element={<ProfilePage />}
+                    />
+                    {/* Router of Order History */}
+                    <Route
+                        path="/profile/order-history"
+                        element={<OrderHistory />}
+                    />
+                    {/* Router of Change Password */}
+                    <Route
+                        path="/profile/change-password"
+                        element={<ChangePassword />}
+                    />
+                    {/* Router of About Shop */}
+                    <Route path="/about" element={<AboutPage />} />
+                    {/* Router of Contact Shop */}
+                </Route>
+                {/* Router of NotFound*/}
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+        </>
+    );
 };
 export default DeclareRouter;
