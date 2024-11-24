@@ -5,17 +5,17 @@ import { useState } from "react";
 import React from "react";
 
 const LayoutDefault = () => {
-  const [orderPopup, setOrderPopup] = useState(false);
-  const handleOrderPopup = () => {
-    setOrderPopup(!orderPopup);
-  };
-  return (
-    <div>
-      <Navbar handleOrderPopup={handleOrderPopup} />
-      <Outlet />
-      <Footer />
-    </div>
-  );
+    const [orderPopup, setOrderPopup] = useState(false);
+    const handleOrderPopup = () => {
+        setOrderPopup(!orderPopup);
+    };
+    return (
+        <div>
+            <Navbar />
+            <Outlet />
+            <Footer />
+        </div>
+    );
 };
 
 export default LayoutDefault;
