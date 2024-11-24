@@ -1,49 +1,32 @@
 import { configureStore } from "@reduxjs/toolkit";
-import appReducer, { AppState } from "./slices/appSlice";
+import { AppState } from "./slices/appSlice";
 
 // Remember add new reducer to here
 
 interface RootStateCustom {
-  app: AppState;
+    app: AppState;
+    user: UserState;
+    cart: CartState;
 }
 
-const loadState = (): RootStateCustom | undefined => {
-  try {
-    const serializedState = sessionStorage.getItem("state");
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
-  } catch (err) {
-    return undefined;
-  }
-};
-
-const saveState = (state: RootState) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    sessionStorage.setItem("state", serializedState);
-  } catch (e) {
-    // Ignore write errors;
-  }
-};
-
-const persistedState = loadState();
+const persistedState = loadFromLocalStorage();
 
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import rootReducer from "./rootReducer";
+import { loadFromLocalStorage, saveToLocalStorage } from "./store/middleware";
+import { UserState } from "./slices/userSlice";
+import { CartState } from "./slices/cartSlice";
 const store = configureStore({
-  reducer: {
-    app: appReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
-  preloadedState: persistedState,
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
+    preloadedState: persistedState,
 });
 
 store.subscribe(() => {
-  saveState(store.getState());
+    saveToLocalStorage(store.getState());
 });
 
 export type RootState = ReturnType<typeof store.getState>;
