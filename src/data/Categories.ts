@@ -1,11 +1,7 @@
-interface Category {
-  name: string;
-  id: string;
-  subCategories: SubCategory[];
-  gender: string;
-}
-
-interface SubCategory {
-  name: string;
-  id: string;
+export interface Category {
+    id: string;
+    categoryName: string;
+    locale: string;
+    children: Category[];
+    parentCategory: Category | null;
 }
