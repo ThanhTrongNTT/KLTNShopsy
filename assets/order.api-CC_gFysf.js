@@ -1,0 +1,1 @@
+import{A as o}from"./index-B-tY19ju.js";const a={createOrder:async r=>{var t,s;const e=`/order/${(s=(t=r.order)==null?void 0:t.user)==null?void 0:s.email}/add`;return o.post(e,r)},getOrderByUser:async r=>{const e=`/orders/email/${r}`;return o.get(e)},paymentMomo:async r=>o.post("/momo",r),paidOrder:async r=>{const e=`/order/${r}/paid`;return o.put(e)}};export{a as o};
