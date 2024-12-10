@@ -1,1 +1,0 @@
-import{A as t}from"./index-DuRh9XQ0.js";const e={login:(r,o)=>t.post("auth/login",{email:r,password:o}),logout:()=>t.post("auth/logout",{},{withCredentials:!0}),refreshToken:r=>t.post("auth/refresh-token",{refreshToken:r}),register:r=>t.post("auth/register",r),forgotPassword:r=>t.post("auth/forgot-password",{email:r})};export{e as A};

@@ -1,0 +1,1 @@
+import{r as t,j as a}from"./index-ClIuhciq.js";import{c as r,d as l}from"./Icon-CXj9-4D1.js";function g(s=!1){const[e,o]=t.useState(s);return{value:e,handleToggleValue:()=>{o(!e)}}}const f=({open:s=!1,...e})=>s?a.jsx(r,{...e}):a.jsx(l,{...e});export{f as T,g as u};
