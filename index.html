@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/sport-store/assets/logo-mbgFVIIi.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sport Store</title>
+      <script type="module" crossorigin src="/sport-store/assets/index-BNfdW5Yk.js"></script>
+      <link rel="stylesheet" crossorigin href="/sport-store/assets/index-BUJ1n5bx.css">
+    </head>
+    <body>
+        <div id="root"></div>
+        <script>
+            // When the user scrolls down 20px from the top of the document, show the button
+            window.onscroll = function () {
+                scrollFunction();
+            };
+
+            function scrollFunction() {
+                if (
+                    document.body.scrollTop > 20 ||
+                    document.documentElement.scrollTop > 20
+                ) {
+                    document.getElementById("movetop").style.display = "block";
+                } else {
+                    document.getElementById("movetop").style.display = "none";
+                }
+            }
+        </script>
+    </body>
+</html>
