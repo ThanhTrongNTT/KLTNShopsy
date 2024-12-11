@@ -21,6 +21,7 @@ const HomePage = () => {
     const { userInfo } = useAppSelector((state: RootState) => state.user);
     const dispatch = useAppDispatch();
     const location = useLocation();
+    const isOAuth2 = Cookies.get("oAuth2") || "";
     const error = new URLSearchParams(location.search).get("error") || "";
     useEffect(() => {
         if (error === "access_denied") {
@@ -33,7 +34,6 @@ const HomePage = () => {
         }
     }, [error]);
     useEffect(() => {
-        const isOAuth2 = Cookies.get("oAuth2");
         const getUserInfo = async () => {
             await Cookies.remove("oAuth2");
             const accessToken = await Cookies.get("accessToken");
@@ -65,7 +65,7 @@ const HomePage = () => {
         if (isOAuth2) {
             getUserInfo();
         }
-    }, []);
+    }, [isOAuth2]);
 
     return (
         <div className="bg-white dark:bg-gray-900 dark:text-white duration-200">
