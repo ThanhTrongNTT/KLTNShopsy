@@ -14,6 +14,8 @@ import {
 } from "../../data/Product";
 import productApi from "../../libs/api/product.api";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useNavigate, useParams } from "react-router-dom";
+import { addToCart } from "../../redux/slices/cartSlice";
 import {
     bundle,
     getBundledProducts,
@@ -21,9 +23,7 @@ import {
     getViewedProducts,
     popular,
     viewed,
-} from "../../redux/slices/ProductSlice";
-import { useNavigate, useParams } from "react-router-dom";
-import { addToCart } from "../../redux/slices/cartSlice";
+} from "../../redux/slices/productSlice";
 
 interface ColorWithSizes {
     color: Color;
@@ -156,21 +156,22 @@ const DetailProductPage = () => {
     };
 
     const getProduct = async () => {
-        productApi
-            .getProductBySlug(slug)
-            .then((res) => {
-                if (res.result) {
-                    setProduct(res.data);
-                    if (res.data.id) {
-                        getProductItemsList(res.data.id);
+        if (slug)
+            productApi
+                .getProductBySlug(slug)
+                .then((res) => {
+                    if (res.result) {
+                        setProduct(res.data);
+                        if (res.data.id) {
+                            getProductItemsList(res.data.id);
+                        }
                     }
-                }
-            })
-            .catch((err) => {
-                if (!err.response.data.result) {
-                    navigate("/not-found");
-                }
-            });
+                })
+                .catch((err) => {
+                    if (!err.response.data.result) {
+                        navigate("/not-found");
+                    }
+                });
     };
 
     useEffect(() => {
