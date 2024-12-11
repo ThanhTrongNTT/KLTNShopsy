@@ -3,19 +3,11 @@ import { AppState } from "./slices/appSlice";
 
 // Remember add new reducer to here
 
-interface RootStateCustom {
-    app: AppState;
-    user: UserState;
-    cart: CartState;
-}
-
 const persistedState = loadFromLocalStorage();
 
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import rootReducer from "./rootReducer";
 import { loadFromLocalStorage, saveToLocalStorage } from "./store/middleware";
-import { UserState } from "./slices/userSlice";
-import { CartState } from "./slices/cartSlice";
 const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>

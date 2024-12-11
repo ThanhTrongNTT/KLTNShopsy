@@ -11,14 +11,16 @@ import {
     PasswordSchema,
 } from "../../libs/utils/schema";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "@assets/logo.png";
 import AuthenticationApi from "../../libs/api/authentication.api";
+import { User } from "../../data/User";
 
 const schema = Yup.object({
     email: EmailSchema,
     password: PasswordSchema,
     confirmPassword: ConfirmPasswordSchema,
+    name: Yup.string().required("Please enter your name"),
 });
 
 const SignUpPage = () => {
@@ -41,7 +43,7 @@ const SignUpPage = () => {
 
     const handleRegister = async (data: FieldValues) => {
         if (data.password !== data.confirmPassword) {
-            toast.error("Confirm password does not match", {
+            toast.error("Mật khẩu không giống nhau", {
                 autoClose: 1000,
                 pauseOnHover: false,
                 draggable: true,
@@ -50,19 +52,24 @@ const SignUpPage = () => {
             setFocus("confirmPassword");
             return;
         }
-        await AuthenticationApi.register(data.email, data.password).then(
-            (res) => {
-                if (res.result) {
-                    navigate("/login");
-                    toast.success(res.message, {
-                        autoClose: 10000,
-                        pauseOnHover: true,
-                        draggable: true,
-                        delay: 50,
-                    });
-                }
+        const user: User = {
+            email: data.email,
+            password: data.password,
+            userProfile: {
+                name: data.name,
+            },
+        };
+        await AuthenticationApi.register(user).then((res) => {
+            if (res.result) {
+                navigate("/login");
+                toast.success(res.message, {
+                    autoClose: 10000,
+                    pauseOnHover: true,
+                    draggable: true,
+                    delay: 50,
+                });
             }
-        );
+        });
     };
 
     // Show error nếu có lỗi xảy ra
@@ -94,8 +101,8 @@ const SignUpPage = () => {
                             alt=""
                         />
                     </div>
-                    <h1 className="text-xl font-bold leading-tight tracking-tight pt-6 md:text-2xl text-black">
-                        Create and account
+                    <h1 className="text-xl font-bold leading-tight tracking-tight text-center pt-6 md:text-2xl text-black">
+                        Tạo tài khoản
                     </h1>
                     <form
                         className="space-y-4 md:space-y-6"
@@ -106,7 +113,7 @@ const SignUpPage = () => {
                                 htmlFor="email"
                                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Your email
+                                Email
                             </label>
                             <Input
                                 variant={"outlined"}
@@ -119,17 +126,33 @@ const SignUpPage = () => {
                         </div>
                         <div>
                             <label
+                                htmlFor="Name"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                Tên người dùng
+                            </label>
+                            <Input
+                                variant={"outlined"}
+                                control={control}
+                                name="name"
+                                type="text"
+                                placeholder="Tên người dùng"
+                                error={errors.name?.message ?? ""}
+                            />
+                        </div>
+                        <div>
+                            <label
                                 htmlFor="password"
                                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Password
+                                Mật khẩu
                             </label>
                             <Input
                                 variant={"outlined"}
                                 control={control}
                                 name="password"
                                 type={showPassword ? "text" : "password"}
-                                placeholder="Password"
+                                placeholder="Mật khẩu"
                                 error={errors.password?.message ?? ""}
                             >
                                 <TogglePassword
@@ -143,14 +166,14 @@ const SignUpPage = () => {
                                 htmlFor="confirm-password"
                                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Confirm Password
+                                Nhập lại mật khẩu
                             </label>
                             <Input
                                 variant={"outlined"}
                                 control={control}
                                 name="confirmPassword"
                                 type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm Password"
+                                placeholder="Nhập lại mật khẩu"
                                 error={errors.confirmPassword?.message ?? ""}
                             >
                                 <TogglePassword
@@ -163,16 +186,16 @@ const SignUpPage = () => {
                             type="submit"
                             className="border-2 bg-cyan-300 border-white w-full text-white bg-primary-600 hover:bg-cyan-100 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800 hover:text-black hover:duration-500"
                         >
-                            Create an account
+                            Tạo tài khoản
                         </button>
                         <p className="text-sm font-light text-gray-400">
-                            Already have an account?{" "}
-                            <a
-                                href="/login"
+                            Đã có tài khoản?{" "}
+                            <Link
+                                to="/login"
                                 className="font-medium text-primary-600 hover:underline text-primary-500"
                             >
-                                Login here
-                            </a>
+                                Đăng nhập
+                            </Link>
                         </p>
                     </form>
                 </div>

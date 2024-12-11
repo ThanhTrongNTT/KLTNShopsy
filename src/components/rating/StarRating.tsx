@@ -13,7 +13,7 @@ const StarRating = ({ rating }) => {
             {Array(fullStars)
                 .fill(0)
                 .map((_, index) => (
-                    <Star />
+                    <Star key={index} />
                 ))}
 
             {/* Render sao nửa nếu có */}

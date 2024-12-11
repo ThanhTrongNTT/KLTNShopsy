@@ -1,4 +1,4 @@
-import AxiosClient from "./axiosClient/AxiosClient";
+import AxiosClient from "./AxiosClient/AxiosClient";
 
 const CategoryApi = {
     getCategoryByLevel: (level: number) => {

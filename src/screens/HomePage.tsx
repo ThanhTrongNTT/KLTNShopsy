@@ -15,22 +15,30 @@ import { jwtDecode } from "jwt-decode";
 import userApi from "../libs/api/user.api";
 import { update } from "../redux/slices/userSlice";
 import { User } from "../data/User";
+import { useLocation } from "react-router-dom";
 
 const HomePage = () => {
-    const [orderPopup, setOrderPopup] = React.useState(false);
     const { userInfo } = useAppSelector((state: RootState) => state.user);
     const dispatch = useAppDispatch();
-
-    const handleOrderPopup = () => {
-        setOrderPopup(!orderPopup);
-    };
+    const location = useLocation();
+    const error = new URLSearchParams(location.search).get("error") || "";
+    useEffect(() => {
+        if (error === "access_denied") {
+            toast.error("Đăng nhập không thành công", {
+                autoClose: 1000,
+                pauseOnHover: true,
+                draggable: true,
+                delay: 50,
+            });
+        }
+    }, [error]);
     useEffect(() => {
         const isOAuth2 = Cookies.get("oAuth2");
-        if (isOAuth2) {
-            Cookies.remove("oAuth2");
-            const accessToken = Cookies.get("accessToken");
-            const decode: JWTType = jwtDecode(accessToken || "");
-            userApi
+        const getUserInfo = async () => {
+            await Cookies.remove("oAuth2");
+            const accessToken = await Cookies.get("accessToken");
+            const decode: JWTType = await jwtDecode(accessToken || "");
+            await userApi
                 .getMe(decode.sub)
                 .then((res) => {
                     const userProfile: User = res.data;
@@ -53,19 +61,21 @@ const HomePage = () => {
                         position: "bottom-right",
                     });
                 });
+        };
+        if (isOAuth2) {
+            getUserInfo();
         }
     }, []);
 
     return (
         <div className="bg-white dark:bg-gray-900 dark:text-white duration-200">
-            <Hero handleOrderPopup={handleOrderPopup} />
+            <Hero />
             <Products />
-            <TopProducts handleOrderPopup={handleOrderPopup} />
+            <TopProducts />
             <Banner />
             <Subscribe />
             <Products />
             <Testimonials />
-            <Popup orderPopup={orderPopup} setOrderPopup={setOrderPopup} />
         </div>
     );
 };

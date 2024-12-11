@@ -14,21 +14,21 @@ import { BrowserRouter as Router } from "react-router-dom";
 import DeclareRouter from "./router";
 
 const App = () => {
-  React.useEffect(() => {
-    AOS.init({
-      offset: 100,
-      duration: 800,
-      easing: "ease-in-sine",
-      delay: 100,
-    });
-    AOS.refresh();
-  }, []);
+    React.useEffect(() => {
+        AOS.init({
+            offset: 100,
+            duration: 800,
+            easing: "ease-in-sine",
+            delay: 100,
+        });
+        AOS.refresh();
+    }, []);
 
-  return (
-    <Router>
-      <DeclareRouter />
-    </Router>
-  );
+    return (
+        <Router>
+            <DeclareRouter />
+        </Router>
+    );
 };
 
 export default App;

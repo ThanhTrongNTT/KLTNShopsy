@@ -1,6 +1,7 @@
-import { Product } from "../../data/Product";
-import { PageResponse } from "../../data/type.interface";
-import AxiosClient from "./axiosClient/AxiosClient";
+import { ApiResponse, PageResponse } from "../../data/payload";
+import { Product, ProductItem } from "../../data/Product";
+// import { PageResponse } from "../../data/type.interface";
+import AxiosClient from "./AxiosClient/AxiosClient";
 
 const productApi = {
     getAllProducts: (
@@ -27,6 +28,10 @@ const productApi = {
         const url = `products/${id}`;
         return AxiosClient.get(url);
     },
+    getProductBySlug: (slug: string): Promise<ApiResponse<Product>> => {
+        const url = `products/slug/${slug}`;
+        return AxiosClient.get(url);
+    },
     searchProductsByCategory: (
         gender: string,
         category: string,
@@ -38,6 +43,14 @@ const productApi = {
         const url = `/products/search-by-category?genderName=${gender}&categoryName=${category}&pageNo=${
             pageNo - 1
         }&pageSize=${pageSize}&sortBy=${sortBy}&sortDir=${sortDir}`;
+        return AxiosClient.get(url);
+    },
+    getProductItemsList: (ids: string): Promise<ApiResponse<ProductItem[]>> => {
+        const url = `products/items-list/${ids}`;
+        return AxiosClient.get(url);
+    },
+    getProductItemById: (id: string): Promise<ApiResponse<ProductItem>> => {
+        const url = `products/items/${id}`;
         return AxiosClient.get(url);
     },
 };

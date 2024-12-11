@@ -1,18 +1,28 @@
+import { Sale } from "./Sale";
+
 export interface Product {
-    id: string;
-    breadCrumb: string;
-    colors: Color[];
-    freeInformation: string;
-    genderName: string;
-    images: ImageProduct;
-    longDescription: string;
-    name: string;
-    prices: PriceProduct;
-    rating: Rating;
-    sizes: Size[];
-    washingInformation: string;
-    listProductItem: ProductItem[];
+    id?: string;
+    freeInformation?: string;
+    longDescription?: string;
+    washingInformation?: string;
+    productName?: string;
+    slug?: string;
+    basePrice?: number;
+    promoPrice?: number | null;
+    gender?: Category | null;
+    category?: Category | null;
+    sales?: Sale | null;
+    subImages?: Image[];
 }
+
+export interface Category {
+    id?: string;
+    categoryName?: string;
+    level?: number;
+    locale?: string;
+    parentCategory?: Category | null;
+}
+
 interface Size {
     code: string;
     displayCode: string;
@@ -27,12 +37,11 @@ interface PriceProduct {
     base: number;
     promo: number;
 }
-
-interface Color {
-    code: string;
-    displayCode: string;
-    name: string;
-    isFavorite: boolean;
+export interface Color {
+    id?: string;
+    code?: string;
+    displayCode?: string;
+    name?: string;
 }
 
 interface ImageProduct {
@@ -42,21 +51,29 @@ interface ImageProduct {
 }
 
 interface Image {
+    id: string;
     url: string;
     fileName: string;
     fileType: string;
-    colorCode: string;
 }
 
-interface ProductItem {
-    color: Color;
-    price: PriceProduct;
-    size: Size;
-    stock: Stock;
-    sales: boolean;
-    salesType: string;
+export interface ProductItem {
+    id?: string;
+    color?: Color | null;
+    size?: string;
+    stock?: number;
+    mainImage?: Image | null;
+    product?: Product | null;
 }
 
+export const initProductItem: ProductItem = {
+    id: "",
+    color: null,
+    size: "",
+    stock: 1,
+    mainImage: null,
+    product: null,
+};
 interface Stock {
     statusCode: string;
     statusLocalized: string;

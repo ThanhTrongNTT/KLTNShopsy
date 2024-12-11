@@ -4,16 +4,19 @@ import Cookies from "js-cookie";
 import useLoadingStore from "../../../redux/store/loading.store";
 // Please have a look at here `https://github.com/axios/axios#request-config` for the full list of configs
 
+const baseURLAPI =
+    "https://thanhtrongsport-be-production.up.railway.app/api/v1/";
+// const baseURLAPI = "http://localhost:8080/api/v1/";
 const AxiosClient = axios.create({
     // baseURL: process.env.REACT_APP_API_URL,
-    baseURL: "http://localhost:8080/api/v1/",
+    baseURL: baseURLAPI,
     headers: {
         "Content-Type": "application/json",
     },
 });
 // @ts-ignore
 AxiosClient.interceptors.request.use(async (config: AxiosRequestConfig) => {
-    useLoadingStore.setState({ loading: true });
+    // useLoadingStore.setState({ loading: true });
     const accessToken = await Cookies.get("accessToken");
     if (accessToken)
         config.headers = {
@@ -24,14 +27,14 @@ AxiosClient.interceptors.request.use(async (config: AxiosRequestConfig) => {
 });
 AxiosClient.interceptors.response.use(
     async (response) => {
-        useLoadingStore.setState({ loading: false });
+        // useLoadingStore.setState({ loading: false });
         if (response && response.data) {
             return response.data;
         }
         return response;
     },
     async (error) => {
-        useLoadingStore.setState({ loading: false });
+        // useLoadingStore.setState({ loading: false });
         console.log(error);
         if (!error.response) {
             toast.error(error.message, {
@@ -51,12 +54,17 @@ AxiosClient.interceptors.response.use(
                         "Content-Type": "application/json",
                     },
                 };
-                const newAccessToken = await axios.post(
-                    `http://localhost:8080/api/v1/refresh-token/${refreshToken}`,
-                    config
-                );
+                const newAccessToken = await axios
+                    .post(baseURLAPI, config)
+                    .catch((error) => {
+                        console.log("error", error);
+                    });
                 console.log("newAccessToken", newAccessToken);
-                if (newAccessToken.data.data.accessToken) {
+                if (
+                    newAccessToken &&
+                    newAccessToken.data &&
+                    newAccessToken.data.data.accessToken
+                ) {
                     Cookies.set(
                         "accessToken",
                         newAccessToken.data.data.accessToken

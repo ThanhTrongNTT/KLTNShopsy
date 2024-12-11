@@ -5,164 +5,146 @@ import { toast } from "react-toastify";
 import { CartDetail } from "../../data/CartDetail";
 import CartItem from "../../components/cart/CartItem";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import {
+    CartItem as CartItemInterface,
+    removeCart,
+    updateCart,
+} from "../../redux/slices/cartSlice";
+import { ProductItem } from "../../data/Product";
 
 const Cart = () => {
     const { userInfo } = useAppSelector((state: RootState) => state.user);
+    const cart = useAppSelector((state: RootState) => state.cart.items);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [carts, setCartsShop] = useState<CartDetail[]>([]);
+    const [subtotal, setSubtotal] = useState(0);
+    const [total, setTotal] = useState(0);
     // useEffect(() => {
     //     if (userInfo.email === "") {
     //         navigate("/login");
     //     }
     // }, [userInfo, navigate]);
 
-    const [productPrices, setProductPrices] = useState<number[]>(
-        carts.map((cart) => {
-            // return cart.product.price;
-            return 123123;
-        })
-    );
-    // const getCartUser = async () => {
-    //     await CartAPI.getCartByUser(userInfo.email)
-    //         .then((res) => {
-    //             if (res.data) {
-    //                 const carts: CartDetail[] = res.data.cartDetails || [];
-    //                 setCartsShop(carts);
-    //                 dispatch(setCarts(carts));
-    //                 dispatch(setCart(res.data));
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             toast.error(err.message, {
-    //                 autoClose: 50000,
-    //                 delay: 10,
-    //                 draggable: true,
-    //                 pauseOnHover: false,
-    //             });
-    //         });
-    // };
-    // const handleUpdateCart = async (cartItem: CartDetail) => {
-    //     await CartAPI.updateCart(cartItem).then(async (res) => {
-    //         if (res.data) {
-    //             await getCartUser();
-    //             toast.success("Update Quantity Success!", {
-    //                 autoClose: 1000,
-    //                 delay: 10,
-    //                 draggable: true,
-    //                 pauseOnHover: false,
-    //             });
-    //         }
-    //     });
-    // };
-    // const handleRemoveFromCart = async (id: string) => {
-    //     await CartAPI.removeFromCart(id)
-    //         .then(async (res) => {
-    //             if (res.data) {
-    //                 toast.success(res.message, {
-    //                     autoClose: 1000,
-    //                     delay: 10,
-    //                     draggable: true,
-    //                     pauseOnHover: false,
-    //                 });
-    //                 getCartUser();
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             toast.error(err.message, {
-    //                 autoClose: 1000,
-    //                 delay: 10,
-    //                 draggable: true,
-    //                 pauseOnHover: false,
-    //             });
-    //         });
-    // };
-    const handleTotalPrice = (price: number, index: number) => {
-        setProductPrices((prevPrices) => {
-            const newPrices = [...prevPrices];
-            newPrices[index] = price;
-            return newPrices;
+    const handleUpdateCart = (cartItem: ProductItem, quantity: number) => {
+        dispatch(
+            updateCart({
+                productId: cartItem.id,
+                quantity: quantity,
+            })
+        );
+    };
+
+    const handleRemoveFromCart = (id: string) => {
+        console.log("id:", id);
+        dispatch(removeCart(id));
+        toast.success("Product removed from cart.", {
+            autoClose: 1000,
+            pauseOnHover: true,
+            draggable: true,
+            delay: 50,
         });
     };
+
+    const handleSubTotalPrice = () => {
+        let totalPrice = 0;
+        cart.forEach((item) => {
+            totalPrice +=
+                (item.productItem.product?.promoPrice ?? 0) * item.quantity;
+        });
+        setSubtotal(totalPrice);
+        setTotal(totalPrice);
+    };
+
+    const handleCheckout = () => {
+        if (cart.length === 0) {
+            toast.error("No product to checkout.", {
+                autoClose: 1000,
+                pauseOnHover: true,
+                draggable: true,
+                delay: 50,
+            });
+            return;
+        }
+        navigate("/order");
+    };
     useEffect(() => {
-        // getCartUser();
-    }, []);
+        handleSubTotalPrice();
+    }, [cart]);
     return (
-        <div className="font-[sans-serif] bg-gray-100 h-screen text-center">
+        <div className="font-Roboto bg-gray-100 h-screen text-center">
             <div className="max-w-7xl mx-auto p-6">
                 <h2 className="text-3xl font-extrabold text-[#333]">
-                    Your shopping bag
+                    Giỏ hàng
                 </h2>
                 <div className="grid lg:grid-cols-2 gap-8 mt-10">
                     <div className="flex flex-col">
-                        {carts.length > 0 ? (
-                            carts.map(
-                                (cartItem: CartDetail, index: number) =>
-                                    cartItem.removalFlag === false && (
-                                        <CartItem
-                                            cartItem={cartItem}
-                                            handleTotalPrice={handleTotalPrice}
-                                            // handleUpdateCart={handleUpdateCart}
-                                            handleUpdateCart={() => {}}
-                                            handleRemoveFromCart={
-                                                // handleRemoveFromCart
-                                                () => {}
-                                            }
-                                            key={index}
-                                            index={index}
-                                            id={cartItem.id}
-                                        />
-                                    )
+                        {cart.length > 0 ? (
+                            cart.map(
+                                (
+                                    cartItem: CartItemInterface,
+                                    index: number
+                                ) => (
+                                    <CartItem
+                                        cartItem={cartItem.productItem}
+                                        quantityItem={cartItem.quantity}
+                                        // handleUpdateCart={handleUpdateCart}
+                                        handleUpdateCart={handleUpdateCart}
+                                        handleRemoveFromCart={
+                                            handleRemoveFromCart
+                                        }
+                                        key={index}
+                                        index={index}
+                                        id={cartItem.productItem.id}
+                                    />
+                                )
                             )
                         ) : (
                             <span className="text-xl font-semibold">
-                                No products to checkout.
+                                Giỏ hàng của bạn đang trống.
                             </span>
                         )}
                     </div>
                     <div className="bg-white h-max rounded-md p-6 shadow-[0_0px_4px_0px_rgba(6,81,237,0.2)]">
                         <h3 className="text-xl font-extrabold [#333] border-b pb-3">
-                            Order Summary
+                            Tóm tắt đơn hàng
                         </h3>
                         <ul className="text-[#333] text-sm divide-y mt-6">
                             <li className="flex flex-wrap gap-4 py-3">
-                                Subtotal{" "}
+                                <span>Tổng cộng</span>
                                 <span className="ml-auto font-bold">
-                                    {productPrices
-                                        .reduce((sum, price) => sum + price, 0)
-                                        .toLocaleString("en", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        })}
+                                    {subtotal.toLocaleString("it-IT", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    })}
                                 </span>
                             </li>
                             <li className="flex flex-wrap gap-4 py-3">
-                                Shipping{" "}
-                                <span className="ml-auto font-bold">Free</span>
+                                <span>Phí vận chuyển</span>
+                                <span className="ml-auto font-bold">
+                                    Miễn phí
+                                </span>
                             </li>
                             <li className="flex flex-wrap gap-4 py-3 font-bold">
-                                Total{" "}
+                                <span>Tổng</span>
                                 <span className="ml-auto">
-                                    {productPrices
-                                        .reduce((sum, price) => sum + price, 0)
-                                        .toLocaleString("en", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        })}
+                                    {total.toLocaleString("it-IT", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    })}
                                 </span>
                             </li>
                         </ul>
                         <button
                             type="button"
-                            disabled={carts.length === 0}
+                            // disabled={carts.length === 0}
                             className={`mt-6 text-sm px-6 py-2.5 w-full bg-[#333] text-white rounded-md ${
-                                carts.length === 0
+                                cart.length === 0
                                     ? "bg-gray-400"
                                     : "hover:bg-[#111]"
                             }`}
-                            onClick={() => navigate("/checkout")}
+                            onClick={handleCheckout}
                         >
-                            Check out
+                            Thanh toán
                         </button>
                     </div>
                 </div>

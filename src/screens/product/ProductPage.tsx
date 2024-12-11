@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import ImageCustom from "../../components/Image/ImageCustom";
-import { Each } from "../../components/Each/Each";
-import ProductItem from "../../components/Products/ProductItem";
-import classNames from "../../libs/utils/classNames";
-import ModalDefault from "../../components/modal/ModalDefault";
 import { Breadcrumb, Dropdown } from "flowbite-react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
+import ModalDefault from "../../components/modal/ModalDefault";
+import ProductItem from "../../components/Products/ProductItem";
 import { Category } from "../../data/Categories";
+import { Product } from "../../data/Product";
 import CategoryApi from "../../libs/api/category.api";
-import { formatCategories } from "../../libs/utils/category";
 import productApi from "../../libs/api/product.api";
+import { formatCategories } from "../../libs/utils/category";
+import classNames from "../../libs/utils/classNames";
 
 const ProductPage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
+    const [searchParams] = useSearchParams();
     const gender = searchParams.get("gender");
+    const categoryName = searchParams.get("category");
     const [activeTab, setActiveTab] = useState<Category | null>(null);
     const [category, setCategory] = useState<Category | null>(null);
-    const [Menu, setMenu] = useState<Category[]>([]);
+    const [menu, setMenu] = useState<Category[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const fetchCategories = async () => {
         await CategoryApi.getAllCategory().then((res) => {
             setMenu(formatCategories(res.data));
@@ -45,6 +45,7 @@ const ProductPage = () => {
             )
             .then((res) => {
                 console.log(res.data.items);
+                setProducts(res.data.items);
             });
     };
     const handleChangeTab = (tab: Category) => {
@@ -66,22 +67,30 @@ const ProductPage = () => {
     }, []);
 
     useEffect(() => {
-        if (gender && Menu.length > 0) {
-            console.log(gender);
-
-            const tab = Menu.find((item) => item.categoryName === gender);
-            console.log(tab);
-
-            if (tab) setActiveTab(tab);
+        if (menu.length > 0 && gender) {
+            const tab = menu.find((item) => item.categoryName === gender);
+            if (tab) {
+                setActiveTab(tab); // Cập nhật tab hiện tại
+                if (categoryName) {
+                    // Nếu có categoryName, cập nhật category và gọi API
+                    const selectedCategory = tab.children.find(
+                        (item) => item.categoryName === categoryName
+                    );
+                    setCategory(selectedCategory || null);
+                } else {
+                    setCategory(null); // Nếu không có categoryName, chỉ lấy theo tab
+                }
+            }
         }
-    }, [Menu]);
-
+    }, [menu, gender, categoryName]);
     useEffect(() => {
-        if (activeTab) fetchProducts(activeTab.categoryName, "");
-    }, [activeTab]);
+        if (activeTab) {
+            fetchProducts(activeTab.categoryName, category?.categoryName || "");
+        }
+    }, [activeTab, category]);
 
     return (
-        <div className="bg-white dark:bg-[#121212] dark:text-white">
+        <div className="bg-white dark:bg-[#121212] dark:text-white min-h-screen">
             <ModalDefault />
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex items-baseline justify-between border-b border-gray-200 py-3">
@@ -96,7 +105,7 @@ const ProductPage = () => {
                     </Breadcrumb>
                 </div>
                 <div className="flex justify-center mb-4">
-                    {Menu.map((tab) => (
+                    {menu.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => handleChangeTab(tab)}
@@ -116,7 +125,9 @@ const ProductPage = () => {
                 >
                     <div data-aos="fade-up">
                         <h1 className="text-sm font-bold">Kết quả</h1>
-                        <h1 className="text-base">12 Sản phẩm</h1>
+                        <h1 className="text-base">
+                            {products.length} Sản phẩm
+                        </h1>
                     </div>
                     <div className="flex gap-x-8 gap-y-10">
                         {/* Filter */}
@@ -154,7 +165,7 @@ const ProductPage = () => {
                             </ul>
                         </div>
                         {/* Main List */}
-                        <div className="">
+                        <div className="w-full">
                             <div className="flex justify-end p-5">
                                 <Dropdown label="Sắp xếp theo">
                                     <Dropdown.Item
@@ -179,26 +190,29 @@ const ProductPage = () => {
                                     </Dropdown.Item>
                                 </Dropdown>
                             </div>
-                            <div className="grid grid-cols-1 col-span-3 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {/* Product */}
-                                {Array.from(
-                                    { length: 10 },
-                                    (_, index) => index + 1
-                                ).map((number, index) => {
-                                    const remainder = index % 8;
-                                    const delay = 300 + remainder * 100;
+                            {products.length > 0 ? (
+                                <div className="grid grid-cols-1 col-span-3 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {/* Product */}
+                                    {products.map((item, index) => {
+                                        const remainder = index % 8;
+                                        const delay = 300 + remainder * 100;
 
-                                    return (
-                                        <div
-                                            key={index}
-                                            data-aos="fade-up"
-                                            data-aos-delay={delay}
-                                        >
-                                            <ProductItem />
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                        return (
+                                            <div
+                                                key={index}
+                                                data-aos="fade-up"
+                                                data-aos-delay={delay}
+                                            >
+                                                <ProductItem product={item} />
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="flex justify-center font-semibold text-xl">
+                                    Không có sản phẩm nào
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>

@@ -1,6 +1,7 @@
 import { ApiResponse } from "./../../data/payload";
 import { AxiosResponse } from "axios";
-import AxiosClient from "./axiosClient/AxiosClient";
+import { User } from "../../data/User";
+import AxiosClient from "./AxiosClient/AxiosClient";
 
 // TODO: Add types for the response
 const AuthenticationApi = {
@@ -16,9 +17,13 @@ const AuthenticationApi = {
         const url = `auth/refresh-token`;
         return AxiosClient.post(url, { refreshToken });
     },
-    register: (email: string, password: string): Promise<ApiResponse> => {
+    register: (user: User): Promise<ApiResponse<User>> => {
         const url = `auth/register`;
-        return AxiosClient.post(url, { email, password });
+        return AxiosClient.post(url, user);
+    },
+    forgotPassword: (email: string): Promise<ApiResponse<boolean>> => {
+        const url = `auth/forgot-password`;
+        return AxiosClient.post(url, { email });
     },
 };
 

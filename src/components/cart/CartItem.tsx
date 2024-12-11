@@ -5,34 +5,33 @@ import { toast } from "react-toastify";
 import React from "react";
 import { CartDetail } from "../../data/CartDetail";
 import ImageCustom from "../Image/ImageCustom";
+import { ProductItem } from "../../data/Product";
+import classNames from "../../libs/utils/classNames";
+import productApi from "../../libs/api/product.api";
 
 type CartItemCardProps = {
-    cartItem: CartDetail;
-    handleTotalPrice: (price: number, index: number) => void;
-    handleUpdateCart: (cartItem: CartDetail) => void;
+    cartItem: ProductItem;
+    quantityItem: number;
+    handleUpdateCart: (cartItem: ProductItem, quantity: number) => void;
     handleRemoveFromCart: (id: string) => void;
     index: number;
     id?: string;
 };
 const CartItem = ({
     cartItem,
-    handleTotalPrice,
+    quantityItem,
     handleUpdateCart,
     handleRemoveFromCart,
     index,
     id,
 }: CartItemCardProps) => {
     // const { userInfo } = useAppSelector((state: RootState) => state.user);
-    const [quantity, setQuantity] = useState(cartItem.quantity || 1);
+    const [quantity, setQuantity] = useState(quantityItem);
+    const [product, setProduct] = useState<ProductItem>(cartItem);
 
-    useEffect(() => {
-        if (cartItem.quantity) setQuantity(cartItem.quantity);
-        // handleTotalPrice(cartItem.product?.price * cartItem.quantity, index);
-    }, []);
+    const handleRemove = () => {
+        console.log(id);
 
-    const handleItemCartQuantity = async () => {};
-
-    const handleRemove = async () => {
         if (id) {
             handleRemoveFromCart(id);
         }
@@ -41,24 +40,33 @@ const CartItem = ({
     const addProduct = () => {
         const newQuantity = quantity + 1;
         setQuantity(newQuantity);
-        // handleTotalPrice(cartItem.product.price * newQuantity, index);
-        cartItem = {
-            ...cartItem,
-            quantity: newQuantity,
-        };
-        handleUpdateCart(cartItem);
+        handleUpdateCart(cartItem, newQuantity);
     };
     const minusProduct = () => {
-        if (quantity === 1) return;
+        if (quantity === 1) {
+            if (id) {
+                handleRemoveFromCart(id);
+            }
+        }
         const newQuantity = quantity - 1;
         setQuantity(newQuantity);
-        // handleTotalPrice(cartItem.product.price * newQuantity, index);
-        cartItem = {
-            ...cartItem,
-            quantity: newQuantity,
-        };
-        handleUpdateCart(cartItem);
+        handleUpdateCart(cartItem, newQuantity);
     };
+
+    useEffect(() => {
+        const getProductFromDB = async (id) => {
+            await productApi.getProductItemById(id).then((res) => {
+                setProduct(res.data);
+            });
+        };
+        if (cartItem) {
+            getProductFromDB(cartItem.id);
+        }
+    }, []);
+
+    useEffect(() => {
+        setQuantity(quantityItem);
+    }, [quantityItem]);
 
     return (
         <div className="flex justify-center items-center">
@@ -78,7 +86,9 @@ const CartItem = ({
                 </div>
                 <div className="col-span-5">
                     {/* <span className="mx-2">{cartItem.product.productName}</span> */}
-                    <span className="mx-2">{"Thanh Trong"}</span>
+                    <span className="mx-2">
+                        {cartItem.product?.productName}
+                    </span>
                 </div>
                 <div className="flex gap-2 col-span-2">
                     <div onClick={minusProduct}>
@@ -87,16 +97,26 @@ const CartItem = ({
                     <span className="h-7 w-8 bg-gray-200 text-center items-center">
                         {quantity}
                     </span>
-                    <div onClick={addProduct}>
+                    <button
+                        onClick={addProduct}
+                        className={classNames(
+                            "",
+                            quantity === product.stock
+                                ? "text-gray-400 cursor-default"
+                                : "cursor-pointer hover:text-green-500"
+                        )}
+                        disabled={quantity === product.stock}
+                    >
                         <IconPlus />
-                    </div>
+                    </button>
                 </div>
                 <div className="col-span-2">
                     <span>
-                        {/* {(cartItem.product.price * quantity).toLocaleString( */}
-                        {(100000 * quantity).toLocaleString("en", {
+                        {(
+                            (cartItem.product?.promoPrice ?? 0) * quantity
+                        ).toLocaleString("it-IT", {
                             style: "currency",
-                            currency: "USD",
+                            currency: "VND",
                         })}
                     </span>
                 </div>

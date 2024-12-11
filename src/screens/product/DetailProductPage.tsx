@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageCustom from "../../components/Image/ImageCustom";
 import classNames from "../../libs/utils/classNames";
 import { toast } from "react-toastify";
@@ -6,9 +6,51 @@ import Slider from "react-slick";
 import { LeftArrowIcon, RightArrowIcon } from "../../components/icon/Icon";
 import ProductItem from "../../components/Products/ProductItem";
 import { Breadcrumb } from "flowbite-react";
+import {
+    Color,
+    initProductItem,
+    Product,
+    ProductItem as ProductItemInterface,
+} from "../../data/Product";
+import productApi from "../../libs/api/product.api";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import {
+    bundle,
+    getBundledProducts,
+    getPopularProducts,
+    getViewedProducts,
+    popular,
+    viewed,
+} from "../../redux/slices/ProductSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { addToCart } from "../../redux/slices/cartSlice";
+
+interface ColorWithSizes {
+    color: Color;
+    productItems: ProductItemInterface[];
+}
+
+const sizeList = ["XS", "S", "M", "L", "XL", "XXL"];
+
 const DetailProductPage = () => {
-    const slug = window.location.pathname.split("/")[2];
-    console.log(slug);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { slug } = useParams();
+    const cart = useAppSelector((state) => state.cart.items);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [productItems, setProductItems] = useState<ProductItemInterface[]>(
+        []
+    );
+    const [selectedProduct, setSelectedProduct] =
+        useState<ProductItemInterface>(initProductItem);
+    const popularList = useAppSelector(getPopularProducts);
+    const viewedList = useAppSelector(getViewedProducts);
+    const bundleList = useAppSelector(getBundledProducts);
+    const [selectedColor, setSelectedColor] = useState<ColorWithSizes | null>(
+        null
+    );
+    const [selectedSize, setSelectedSize] = useState("");
+    const [quantity, setQuantity] = useState(1);
 
     const [tab, setTab] = useState<string>("description");
 
@@ -16,7 +58,7 @@ const DetailProductPage = () => {
         // dots: true,
         speed: 500,
         slidesToScroll: 4,
-        infinite: true,
+        infinite: false,
         autoplay: true,
         autoplaySpeed: 2000,
         cssEase: "linear",
@@ -50,44 +92,105 @@ const DetailProductPage = () => {
         ],
     };
 
-    const images = [
-        {
-            id: "1",
-            url: "https://readymadeui.com/images/product1.webp",
-            fileName: "product1",
-        },
-        {
-            id: "2",
-            url: "https://readymadeui.com/images/product2.webp",
-            fileName: "product2",
-        },
-        {
-            id: "3",
-            url: "https://readymadeui.com/images/product3.webp",
-            fileName: "product3",
-        },
-        {
-            id: "4",
-            url: "https://readymadeui.com/images/product4.webp",
-            fileName: "product4",
-        },
-    ];
+    const handleGetColorsWithSizes = (): ColorWithSizes[] => {
+        const colorMap = new Map<
+            string,
+            { color: Color; productItems: ProductItemInterface[] }
+        >();
 
-    const [sizes, setSizes] = useState([
-        { name: "SM", hasChosen: true },
-        { name: "S", hasChosen: false },
-        { name: "L", hasChosen: false },
-        { name: "XL", hasChosen: false },
-    ]);
+        productItems.forEach((item) => {
+            const { color } = item;
 
-    const handleClickSize = (item) => {
-        const newSizes = sizes.map((size) => {
-            if (size.name === item.name) {
-                return { ...size, hasChosen: true };
+            if (color && color.id) {
+                if (colorMap.has(color.id)) {
+                    const existing = colorMap.get(color.id);
+                    if (existing) {
+                        existing.productItems.push(item);
+                    }
+                } else {
+                    colorMap.set(color.id, {
+                        color,
+                        productItems: [item],
+                    });
+                }
             }
-            return { ...size, hasChosen: false };
         });
-        setSizes(newSizes);
+        return Array.from(colorMap.values());
+    };
+    const colorsWithSizes = handleGetColorsWithSizes();
+
+    const handleAddToCart = () => {
+        const productItem = productItems.find(
+            (item) =>
+                item.color?.id === selectedColor?.color.id &&
+                item.size === selectedSize
+        );
+        dispatch(addToCart(productItem));
+        toast.success("Product added to cart.", {
+            autoClose: 1000,
+            pauseOnHover: true,
+            draggable: true,
+            delay: 50,
+        });
+    };
+    const handleClickSize = (item: ProductItemInterface) => {
+        setSelectedProduct(item);
+        if (item.size) setSelectedSize(item.size);
+    };
+
+    const isStock = () => {
+        if (!selectedProduct || !selectedProduct.stock) {
+            return true;
+        }
+
+        const stock = selectedProduct.stock;
+
+        return cart.every((item) => item.quantity && item.quantity < stock);
+    };
+    const getProductItemsList = async (id: string) => {
+        productApi.getProductItemsList(id).then((res) => {
+            if (res.result) {
+                setProductItems(res.data);
+            }
+        });
+    };
+
+    const getProduct = async () => {
+        productApi
+            .getProductBySlug(slug)
+            .then((res) => {
+                if (res.result) {
+                    setProduct(res.data);
+                    if (res.data.id) {
+                        getProductItemsList(res.data.id);
+                    }
+                }
+            })
+            .catch((err) => {
+                if (!err.response.data.result) {
+                    navigate("/not-found");
+                }
+            });
+    };
+
+    useEffect(() => {
+        getProduct();
+        dispatch(popular());
+        dispatch(viewed());
+        dispatch(bundle());
+    }, []);
+
+    useEffect(() => {
+        console.log(selectedProduct);
+    }, [selectedProduct]);
+
+    const handleColorChange = (item: ColorWithSizes) => {
+        setSelectedColor(item);
+    };
+    const handleQuantityChange = (delta: number) => {
+        if (quantity + delta > 0) {
+            setQuantity(quantity + delta);
+        }
     };
 
     return (
@@ -95,9 +198,19 @@ const DetailProductPage = () => {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex items-baseline justify-between py-3">
                     <Breadcrumb>
-                        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
-                        <Breadcrumb.Item href="#">Nữ</Breadcrumb.Item>
-                        <Breadcrumb.Item>Áo Thun</Breadcrumb.Item>
+                        <Breadcrumb.Item href="#">
+                            <span className="font-bold">Home</span>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item
+                            href={`/product?gender=${product?.gender?.categoryName}`}
+                        >
+                            <span className="font-bold">
+                                {product?.gender?.locale?.toUpperCase()}
+                            </span>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item>
+                            {product?.category?.locale}
+                        </Breadcrumb.Item>
                     </Breadcrumb>
                 </div>
                 <div className="grid items-start grid-cols-1 lg:grid-cols-2 gap-10">
@@ -112,9 +225,9 @@ const DetailProductPage = () => {
                             />
                         </div>
                         <div className="flex gap-x-8 gap-y-6 justify-center mx-auto mt-6">
-                            {images &&
-                                images.length > 1 &&
-                                images.map((image) => (
+                            {product?.subImages &&
+                                product?.subImages.length > 1 &&
+                                product?.subImages.map((image) => (
                                     <img
                                         key={image.id}
                                         // onClick={() => setImage(image.url)}
@@ -126,16 +239,17 @@ const DetailProductPage = () => {
                         </div>
                     </div>
                     <div className="w-3/4">
-                        <div className="flex flex-wrap items-start gap-4">
+                        <div className="grid grid-cols-2">
                             <div>
-                                <h2 className="text-2xl font-extrabold text-gray-800">
-                                    Thanh Trong
+                                <h2 className="font-semibold text-gray-800">
+                                    {product?.productName}
                                 </h2>
                                 <p className="text-sm text-gray-400 mt-2">
-                                    Man
+                                    {product?.gender?.locale?.toUpperCase() ||
+                                        ""}
                                 </p>
                             </div>
-                            <div className="ml-auto flex flex-wrap gap-4">
+                            <div className="ml-auto h-fit flex flex-wrap gap-4">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -197,30 +311,143 @@ const DetailProductPage = () => {
                             </div>
                         </div>
                         <hr className="my-8" />
-                        <div className="flex flex-wrap gap-4 items-start justify-between">
+                        {productItems.length > 0 ? (
                             <div>
-                                <p>
-                                    <span className="text-lg font-semibold line-through text-black dark:text-[#E0E0E0]">
-                                        {(480000).toLocaleString("it-IT", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        })}
+                                <div className="flex flex-col mb-4 gap-y-2">
+                                    <div className="flex items-center gap-x-4">
+                                        {colorsWithSizes.map((item) => (
+                                            <button
+                                                key={item.color.id}
+                                                className={`w-10 h-10 rounded-full border ${
+                                                    selectedColor?.color
+                                                        .name ===
+                                                    item.color.name
+                                                        ? "border-black scale-110 border-2"
+                                                        : "border-gray-300 border-4"
+                                                } hover:border-gray-400 transition-transform duration-200 transform`}
+                                                style={{
+                                                    backgroundColor:
+                                                        item.color.code,
+                                                }}
+                                                onClick={() =>
+                                                    handleColorChange(item)
+                                                }
+                                                aria-label={`Select color ${item.color}`}
+                                            ></button>
+                                        ))}
+                                    </div>
+                                    <span className="text-[#6a6a6a] text-sm">
+                                        Màu sắc:{" "}
+                                        {selectedColor?.color.displayCode}{" "}
+                                        {selectedColor?.color.name}
                                     </span>
-                                </p>
-                                <p>
-                                    <span className="text-2xl font-bold text-red-500 dark:text-[#E0E0E0]">
-                                        {(390000).toLocaleString("it-IT", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        })}
+                                </div>
+                                <div className="flex flex-col mb-4 gap-y-2">
+                                    <div className="flex space-x-2">
+                                        {selectedColor
+                                            ? selectedColor.productItems.map(
+                                                  (item, index) => (
+                                                      <button
+                                                          key={index}
+                                                          className={`px-4 py-2 border rounded-lg text-sm font-medium ${
+                                                              item.size ===
+                                                              selectedSize
+                                                                  ? "border-gray-500 bg-gray-200 shadow-lg"
+                                                                  : "border-gray-300"
+                                                          } hover:bg-gray-100 hover:shadow transition-all duration-200`}
+                                                          onClick={() =>
+                                                              handleClickSize(
+                                                                  item
+                                                              )
+                                                          }
+                                                      >
+                                                          {item.size}
+                                                      </button>
+                                                  )
+                                              )
+                                            : sizeList.map((size, index) => (
+                                                  <button
+                                                      key={index}
+                                                      className={` cursor-not-allowed px-4 py-2 border rounded-lg text-sm font-medium`}
+                                                  >
+                                                      {size}
+                                                  </button>
+                                              ))}
+                                    </div>
+                                    <span className="text-[#6a6a6a] text-sm ">
+                                        Kích cỡ: {product?.gender?.locale}{" "}
+                                        {selectedSize}
                                     </span>
-                                </p>
+                                </div>
                             </div>
-                            <div className="flex flex-wrap gap-4">
-                                <button
-                                    type="button"
-                                    className="px-2.5 py-1.5 bg-pink-100 text-xs text-pink-600 rounded-md flex items-center"
-                                >
+                        ) : (
+                            <> Không có sản phẩm phù hợp</>
+                        )}
+
+                        <hr className="my-8" />
+                        <div className="flex justify-between">
+                            <div>
+                                <div className="flex flex-wrap gap-4 items-start justify-between mb-5">
+                                    <div>
+                                        {product?.basePrice ===
+                                        product?.promoPrice ? (
+                                            <>
+                                                <p>
+                                                    <span className="text-lg font-semibold text-black dark:text-[#E0E0E0]">
+                                                        {product?.basePrice?.toLocaleString(
+                                                            "it-IT",
+                                                            {
+                                                                style: "currency",
+                                                                currency: "VND",
+                                                            }
+                                                        )}
+                                                    </span>
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p>
+                                                    <span className="text-lg font-semibold line-through text-black dark:text-[#E0E0E0]">
+                                                        {product?.basePrice?.toLocaleString(
+                                                            "it-IT",
+                                                            {
+                                                                style: "currency",
+                                                                currency: "VND",
+                                                            }
+                                                        )}
+                                                    </span>
+                                                </p>
+                                                <p>
+                                                    <span className="text-2xl font-bold text-red-500 dark:text-[#E0E0E0]">
+                                                        {product?.promoPrice?.toLocaleString(
+                                                            "it-IT",
+                                                            {
+                                                                style: "currency",
+                                                                currency: "VND",
+                                                            }
+                                                        )}
+                                                    </span>
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                    <span className="text-base text-red-500">
+                                        {product?.sales &&
+                                            product?.sales.description}
+                                    </span>
+                                </div>
+                                {productItems.length === 0 ? (
+                                    <span className="text-gray-500">
+                                        Không có sản phẩm phù hợp
+                                    </span>
+                                ) : selectedProduct.id !== "" && !isStock() ? (
+                                    <span className="text-red-500">
+                                        Hết hàng
+                                    </span>
+                                ) : null}
+                            </div>
+                            <div className="flex flex-wrap gap-4 h-fit">
+                                <span className="px-2.5 py-1.5 bg-pink-100 text-xs text-pink-600 rounded-md flex items-center">
                                     <svg
                                         className="w-3 mr-1"
                                         fill="currentColor"
@@ -230,7 +457,7 @@ const DetailProductPage = () => {
                                         <path d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
                                     </svg>
                                     4.8
-                                </button>
+                                </span>
                                 <button
                                     type="button"
                                     className="px-2.5 py-1.5 bg-gray-100 text-xs text-gray-800 rounded-md flex items-center"
@@ -257,80 +484,27 @@ const DetailProductPage = () => {
                                     87 Reviews
                                 </button>
                             </div>
-                            <span className="text-base text-red-500">
-                                Limited Offer Từ 11 Oct 2024 - 17 Oct 2024
-                            </span>
                         </div>
                         <hr className="my-8" />
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-800">
-                                Choose a Size
-                            </h3>
-                            <div className="flex flex-wrap gap-4 mt-4">
-                                {sizes.map((item, index) => (
-                                    <button
-                                        onClick={() => handleClickSize(item)}
-                                        key={index}
-                                        type="button"
-                                        className={classNames(
-                                            "w-12 h-12 border-2 hover:border-gray-800 font-bold text-sm rounded-full flex items-center justify-center shrink-0",
-                                            item.hasChosen
-                                                ? "border-gray-800 text-gray-800"
-                                                : "border-gray-400 text-gray-400"
-                                        )}
-                                    >
-                                        {item.name}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <hr className="my-8" />
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-800">
-                                Choose a Color
-                            </h3>
-                            <div className="flex flex-wrap gap-4 mt-4">
-                                <button
-                                    type="button"
-                                    className="w-12 h-12 bg-black border-2 border-white hover:border-gray-800 rounded-full shrink-0"
-                                ></button>
-                                <button
-                                    type="button"
-                                    className="w-12 h-12 bg-gray-400 border-2 border-white hover:border-gray-800 rounded-full shrink-0"
-                                ></button>
-                                <button
-                                    type="button"
-                                    className="w-12 h-12 bg-orange-400 border-2 border-white hover:border-gray-800 rounded-full shrink-0"
-                                ></button>
-                                <button
-                                    type="button"
-                                    className="w-12 h-12 bg-red-400 border-2 border-white hover:border-gray-800 rounded-full shrink-0"
-                                ></button>
-                            </div>
-                        </div>
-                        <hr className="my-8" />
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-800">
-                                Quantity
-                            </h3>
-                            <select className="px-10 border border-gray-400 py-2">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                            </select>
-                            <hr className="my-8" />
-                        </div>
                         <div className="flex flex-wrap gap-4">
                             <button
                                 type="button"
-                                className="min-w-[200px] px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white text-sm font-bold rounded"
-                            >
-                                Buy now
-                            </button>
-                            <button
-                                type="button"
-                                className="min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-bold rounded"
+                                onClick={() => handleAddToCart()}
+                                className={classNames(
+                                    "min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-300 hover:border-gray-500 text-gray-800 text-sm font-bold rounded",
+                                    productItems.length > 0 &&
+                                        isStock() &&
+                                        selectedProduct.id !== ""
+                                        ? "cursor-pointer"
+                                        : "cursor-not-allowed"
+                                )}
+                                disabled={
+                                    productItems.length > 0 &&
+                                    isStock() &&
+                                    selectedProduct.id !== ""
+                                        ? false
+                                        : true
+                                }
                             >
                                 Add to cart
                             </button>
@@ -377,33 +551,9 @@ const DetailProductPage = () => {
                                     Product Description
                                 </h3>
                                 <p className="text-sm text-gray-400 mt-4">
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Optio delectus excepturi
-                                    repellendus ipsa eaque consequatur
-                                    exercitationem, dignissimos sunt voluptatum
-                                    enim velit accusantium nulla consequuntur
-                                    eligendi iusto eius quam nesciunt magni.
+                                    {product?.longDescription}
                                 </p>
                             </div>
-                            {/* <ul className="space-y-3 list-disc mt-6 pl-4 text-sm text-gray-400">
-                                <li>
-                                    A gray t-shirt is a wardrobe essential
-                                    because it is so versatile.
-                                </li>
-                                <li>
-                                    Available in a wide range of sizes, from
-                                    extra small to extra large, and even in tall
-                                    and petite sizes.
-                                </li>
-                                <li>
-                                    This is easy to care for. They can usually
-                                    be machine-washed and dried on low heat.
-                                </li>
-                                <li>
-                                    You can add your own designs, paintings, or
-                                    embroidery to make it your own.
-                                </li>
-                            </ul> */}
                         </>
                     ) : tab === "review" ? (
                         <>
@@ -412,34 +562,12 @@ const DetailProductPage = () => {
                                     Product Review
                                 </h3>
                                 <p className="text-sm text-gray-400 mt-4">
-                                    Elevate your casual style with our premium
-                                    men's t-shirt. Crafted for comfort and
-                                    designed with a modern fit, this versatile
-                                    shirt is an essential addition to your
-                                    wardrobe. The soft and breathable fabric
-                                    ensures all-day comfort, making it perfect
-                                    for everyday wear. Its classic crew neck and
-                                    short sleeves offer a timeless look.
+                                    {product?.freeInformation}
                                 </p>
                             </div>
                             <ul className="space-y-3 list-disc mt-6 pl-4 text-sm text-gray-400">
-                                <li>
-                                    A gray t-shirt is a wardrobe essential
-                                    because it is so versatile.
-                                </li>
-                                <li>
-                                    Available in a wide range of sizes, from
-                                    extra small to extra large, and even in tall
-                                    and petite sizes.
-                                </li>
-                                <li>
-                                    This is easy to care for. They can usually
-                                    be machine-washed and dried on low heat.
-                                </li>
-                                <li>
-                                    You can add your own designs, paintings, or
-                                    embroidery to make it your own.
-                                </li>
+                                <li>{product?.washingInformation}</li>
+                                <li>{product?.freeInformation}</li>
                             </ul>
                         </>
                     ) : (
@@ -461,69 +589,81 @@ const DetailProductPage = () => {
                     )}
                 </div>
             </div>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-                <div>
-                    <div
-                        data-aos="fade-up"
-                        className="font-bold text-xl flex justify-center py-4"
-                    >
-                        SẢN PHẨM ĐƯỢC QUAN TÂM
+            {
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+                    <div>
+                        <div
+                            data-aos="fade-up"
+                            className="font-bold text-xl flex justify-center py-4"
+                        >
+                            SẢN PHẨM ĐƯỢC QUAN TÂM
+                        </div>
+                        <Slider
+                            {...settingsSlider}
+                            infinite={popularList && popularList.length > 3}
+                        >
+                            {popularList &&
+                                popularList.map((item, index) => (
+                                    <div
+                                        key={item.id || index}
+                                        data-aos="fade-up"
+                                        data-aos-delay={400 + index * 100}
+                                        className="h-[630px]"
+                                    >
+                                        <ProductItem product={item} />
+                                    </div>
+                                ))}
+                        </Slider>
                     </div>
-                    <Slider {...settingsSlider}>
-                        {Array.from({ length: 5 }, (_, index) => index + 1).map(
-                            (number) => (
-                                <div
-                                    data-aos="fade-up"
-                                    data-aos-delay={400 + number * 100}
-                                >
-                                    <ProductItem />
-                                </div>
-                            )
-                        )}
-                    </Slider>
-                </div>
-                <div className="py-8">
-                    <div
-                        data-aos="fade-up"
-                        className="font-bold text-xl flex justify-center py-4"
-                    >
-                        SẢN PHẨM THƯỜNG ĐƯỢC MUA KÈM
+                    <div className="py-8">
+                        <div
+                            data-aos="fade-up"
+                            className="font-bold text-xl flex justify-center py-4"
+                        >
+                            SẢN PHẨM THƯỜNG ĐƯỢC MUA KÈM
+                        </div>
+                        <div data-aos="zoom-in">
+                            <Slider
+                                {...settingsSlider}
+                                infinite={viewedList && viewedList.length > 3}
+                            >
+                                {viewedList &&
+                                    viewedList.map((item, index) => (
+                                        <div
+                                            key={item.id}
+                                            data-aos="fade-up"
+                                            data-aos-delay={400 + index * 100}
+                                            className="h-[630px]"
+                                        >
+                                            <ProductItem product={item} />
+                                        </div>
+                                    ))}
+                            </Slider>
+                        </div>
                     </div>
-                    {/* <div className="grid grid-cols-1 col-span-3 sm:grid-cols-2 lg:grid-cols-4 gap-8"> */}
-                    <div data-aos="zoom-in">
-                        <Slider {...settingsSlider}>
-                            {Array.from(
-                                { length: 5 },
-                                (_, index) => index + 1
-                            ).map((number) => (
-                                <div
-                                    data-aos="fade-up"
-                                    data-aos-delay={400 + number * 100}
-                                >
-                                    <ProductItem />
-                                </div>
-                            ))}
+                    <div className="py-8">
+                        <div data-aos="fade-up" className="font-bold text-xl">
+                            ĐÃ XEM GẦN ĐÂY
+                        </div>
+                        <Slider
+                            {...settingsSlider}
+                            infinite={bundleList && bundleList.length > 3}
+                        >
+                            {bundleList &&
+                                bundleList.map((item, index) => (
+                                    <div
+                                        key={item.id}
+                                        data-aos="fade-up"
+                                        data-aos-delay={400 + index * 100}
+                                        className="h-[630px]"
+                                    >
+                                        <ProductItem product={item} />
+                                    </div>
+                                ))}
                         </Slider>
                     </div>
                 </div>
-                <div className="py-8">
-                    <div data-aos="fade-up" className="font-bold text-xl">
-                        ĐÃ XEM GẦN ĐÂY
-                    </div>
-                    <Slider {...settingsSlider}>
-                        {Array.from({ length: 5 }, (_, index) => index + 1).map(
-                            (number) => (
-                                <div
-                                    data-aos="fade-up"
-                                    data-aos-delay={400 + number * 100}
-                                >
-                                    <ProductItem />
-                                </div>
-                            )
-                        )}
-                    </Slider>
-                </div>
-            </div>
+            }
         </div>
     );
 };

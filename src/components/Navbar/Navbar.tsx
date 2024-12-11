@@ -2,7 +2,6 @@ import Logo from "@assets/logo.png";
 import React, { FormEvent, KeyboardEvent, useEffect, useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
-import { IoMdSearch } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import DarkMode from "./DarkMode";
 import DropdownCart from "../dropdown/DropdownCart";
@@ -14,6 +13,12 @@ import { formatCategories } from "../../libs/utils/category";
 import { Category } from "../../data/Categories";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import { clearUser } from "../../redux/slices/userSlice";
+import Tippy from "@tippyjs/react/headless";
+import Menu from "../menu/Menu";
+import { IconArrowDown } from "../icon/Icon";
+import { Avatar } from "flowbite-react";
+import classNames from "../../libs/utils/classNames";
+// import Avatar from "../avatar/Avatar";
 
 const items = [
     {
@@ -48,15 +53,16 @@ const items = [
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const cart = useAppSelector((state) => state.cart.items);
     const [isHovered, setIsHovered] = useState(false);
+    const [isTippyVisible, setTippyVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const [Menu, setMenu] = useState<Category[]>([]);
+    const [menu, setMenu] = useState<Category[]>([]);
     const { userInfo } = useAppSelector((state: RootState) => state.user);
     const dispatch = useAppDispatch();
     const fetchCategories = async () => {
         const res = await CategoryApi.getAllCategory();
         setMenu(formatCategories(res.data));
-        console.log("Menu: ", Menu);
     };
     const handleSearch = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -90,7 +96,17 @@ const Navbar = () => {
         console.log("Current input: ", newValue);
     };
     useEffect(() => {
+        const checkAccessToken = () => {
+            return Cookies.get("accessToken") || "";
+        };
+        if (checkAccessToken() === "") {
+            dispatch(clearUser());
+        }
+    }, []);
+    useEffect(() => {
         fetchCategories();
+
+        localStorage.removeItem("order");
     }, [isLogin]);
     return (
         <div className="shadow-md bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40">
@@ -99,28 +115,16 @@ const Navbar = () => {
                 <div className="container flex justify-between items-center">
                     <div>
                         <a
-                            href="#"
+                            href="/"
                             className="font-bold text-2xl sm:text-3xl flex gap-2"
                         >
                             <img src={Logo} alt="Logo" className="w-10" />
-                            Shopsy
+                            Sport Store
                         </a>
                     </div>
 
                     {/* search bar */}
                     <div className="flex justify-between items-center gap-4">
-                        <div className="relative group hidden sm:block">
-                            <input
-                                onKeyDown={handleSearch}
-                                onChange={handleChangeSearch}
-                                type="text"
-                                value={searchText}
-                                placeholder="search"
-                                className="w-[200px] sm:w-[200px] group-hover:w-[300px] transition-all duration-300 rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-1 focus:border-primary dark:border-gray-500 dark:bg-gray-800 items-center content-center"
-                            />
-                            <IoMdSearch className="text-gray-500 group-hover:text-primary absolute top-1/2 -translate-y-1/2 right-3" />
-                        </div>
-
                         {/* order button */}
                         <div className="relative">
                             <button
@@ -133,36 +137,73 @@ const Navbar = () => {
                                 <div className="relative">
                                     <FaCartShopping className="text-xl text-white drop-shadow-sm cursor-pointer" />
                                     <span className="absolute -top-3 -right-4 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
-                                        {items.length}
+                                        {cart.length}
                                     </span>
                                 </div>
                             </button>
-                            {isHovered && <DropdownCart items={items} />}
+                            {isHovered && <DropdownCart items={cart} />}
                         </div>
-                        <div>
-                            <DarkMode />
-                        </div>
+                        <div>{/* <DarkMode /> */}</div>
                         {!isLogin ? (
                             <div className="flex gap-5">
                                 <Link to={"/login"}>
                                     <div className="text-lg font-medium text-gray-700 hover:text-gray-800 cursor-pointer">
-                                        Login
+                                        Đăng nhập
                                     </div>
                                 </Link>
                                 <span
                                     className="h-6 w-px bg-gray-400"
                                     aria-hidden="true"
                                 ></span>
-                                <Link to={"sign-up"}>
+                                <Link to={"/sign-up"}>
                                     <div className="text-lg font-medium text-gray-700 hover:text-gray-800 cursor-pointer pr-3">
-                                        Create account
+                                        Tạo tài khoản
                                     </div>
                                 </Link>
                             </div>
                         ) : (
-                            <div className="flex gap-5">
-                                <span>Logged</span>
-                                <button onClick={handleLogout}>Logout</button>
+                            <div className="flex gap-5 justify-center items-center">
+                                <Avatar
+                                    img={
+                                        userInfo?.userProfile?.avatar?.url ||
+                                        "https://images.unsplash.com/photo-1441123694162-e54a981ceba5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
+                                    }
+                                    rounded
+                                    bordered
+                                    alt="avatar"
+                                />
+                                <Tippy
+                                    interactive
+                                    delay={[0, 200]}
+                                    offset={[0, 10]}
+                                    onShow={() => setTippyVisible(true)}
+                                    onHide={() => setTippyVisible(false)}
+                                    // visible
+                                    render={() => (
+                                        <div
+                                            className="w-[238px] rounded-2xl"
+                                            tabIndex={-1}
+                                        >
+                                            <Menu handleLogout={handleLogout} />
+                                        </div>
+                                    )}
+                                >
+                                    <div className="flex items-center gap-2 cursor-pointer group p-2">
+                                        <p className="">
+                                            {userInfo?.userProfile?.name}
+                                        </p>
+                                        <span>
+                                            <FaCaretDown
+                                                className={classNames(
+                                                    "transition-all duration-300",
+                                                    isTippyVisible
+                                                        ? "rotate-180"
+                                                        : "rotate-0"
+                                                )}
+                                            />
+                                        </span>
+                                    </div>
+                                </Tippy>
                             </div>
                         )}
                     </div>
@@ -172,17 +213,20 @@ const Navbar = () => {
             <div data-aos="zoom-in" className="flex justify-center">
                 <ul className="sm:flex hidden items-center gap-4">
                     <li key={1} className="group relative cursor-pointer">
-                        <a href={"/"} className="px-4 flex items-center">
+                        <a
+                            href={"/KLTNShopsy"}
+                            className="px-4 flex items-center"
+                        >
                             Trang chủ
                         </a>
                     </li>
-                    {Menu.map((data) => (
+                    {menu.map((data) => (
                         <li
                             key={data.id}
                             className="group relative cursor-pointer"
                         >
-                            <a
-                                href={`/product?gender=${data.categoryName}`}
+                            <Link
+                                to={`/product?gender=${data.categoryName}`}
                                 className="px-4 flex items-center"
                             >
                                 {data.locale}
@@ -191,7 +235,7 @@ const Navbar = () => {
                                         <FaCaretDown className="transition-all duration-200 group-hover:rotate-180" />
                                     </span>
                                 )}
-                            </a>
+                            </Link>
                             {data.children.length > 0 && (
                                 <div className="absolute z-[9999] hidden group-hover:block w-[200px] rounded-md bg-white p-2 text-black shadow-md">
                                     <ul>
@@ -212,13 +256,6 @@ const Navbar = () => {
                     ))}
                 </ul>
             </div>
-            {userInfo.id === "" || (
-                <img
-                    src={userInfo.userProfile.avatar.url}
-                    alt="Logo"
-                    className="w-10 h-10 rounded-full absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer"
-                />
-            )}
         </div>
     );
 };

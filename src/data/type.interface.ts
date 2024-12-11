@@ -1,5 +1,6 @@
 export interface JWTType {
     admin: boolean;
+    active: boolean;
     sub: string;
     exp: number;
     iat: number;

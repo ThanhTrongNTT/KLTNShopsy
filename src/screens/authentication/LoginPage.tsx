@@ -19,6 +19,7 @@ import { jwtDecode } from "jwt-decode";
 import userApi from "../../libs/api/user.api";
 import { update } from "../../redux/slices/userSlice";
 import { User } from "../../data/User";
+import { IconGithub } from "../../components/icon/Icon";
 
 const schema = Yup.object({
     email: EmailSchema,
@@ -140,7 +141,7 @@ const LoginPage = () => {
                 </div>
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                        Log in to your account
+                        Đăng nhập
                     </h1>
                     <form
                         className="space-y-4 md:space-y-6"
@@ -151,7 +152,7 @@ const LoginPage = () => {
                                 htmlFor="email"
                                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Your email
+                                Email
                             </label>
                             <Input
                                 variant={"outlined"}
@@ -167,14 +168,14 @@ const LoginPage = () => {
                                 htmlFor="password"
                                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Password
+                                Mật khẩu
                             </label>
                             <Input
                                 variant={"outlined"}
                                 control={control}
                                 name="password"
                                 type={showPassword ? "text" : "password"}
-                                placeholder="Password"
+                                placeholder="Mật khẩu"
                                 error={errors.password?.message ?? ""}
                             >
                                 <TogglePassword
@@ -188,39 +189,46 @@ const LoginPage = () => {
                                 to={"/forgot-password"}
                                 className="text-sm font-medium text-black hover:underline"
                             >
-                                Forgot password?
+                                Quên mật khẩu?
                             </Link>
                         </div>
                         <button
                             type="submit"
                             className="border-2 bg-cyan-300 border-white w-full text-white bg-primary-600 hover:bg-cyan-100 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800 hover:text-black hover:duration-500"
                         >
-                            Sign in
+                            Đăng nhập
                         </button>
 
                         <p className="text-sm font-light text-gray-400">
-                            Don’t have an account yet?{" "}
-                            <a
-                                href="/sign-up"
+                            Bạn chưa có tài khoản?{" "}
+                            <Link
+                                to="/sign-up"
                                 className="font-medium text-primary-600 hover:underline text-primary-500"
                             >
-                                Sign up
-                            </a>
+                                Đăng ký
+                            </Link>
                         </p>
                     </form>
-                    <a
-                        className="btn btn-block social-btn google"
-                        href={GOOGLE_AUTH_URL}
-                    >
-                        <img src={googleLogo} alt="Google" /> Log in with Google
-                    </a>
+                    <div className="flex flex-col mt-8 gap-y-4">
+                        <a
+                            className="hover:scale-110 ease-in-out duration-300 transition flex items-center justify-center gap-2 border border-gray-200 w-full py-3 mb-4 text-gray-800 font-bold text-sm uppercase bg-white rounded-lg shadow-md"
+                            href={GOOGLE_AUTH_URL}
+                        >
+                            <img
+                                src={googleLogo}
+                                className="h-6 w-6"
+                                alt="Google"
+                            />{" "}
+                            Đăng nhập với Google
+                        </a>
 
-                    <a
-                        className="btn btn-block social-btn google"
-                        href={GITHUB_AUTH_URL}
-                    >
-                        <img src={googleLogo} alt="Google" /> Log in with Github
-                    </a>
+                        <a
+                            className="hover:scale-110 ease-in-out flex items-center justify-center w-full py-3 mb-4 text-white font-bold text-sm uppercase bg-gray-800 rounded-lg shadow-md transition duration-300"
+                            href={GITHUB_AUTH_URL}
+                        >
+                            <IconGithub /> Đăng nhập với Github
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
