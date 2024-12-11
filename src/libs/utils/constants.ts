@@ -1,12 +1,12 @@
 import Cookies from "js-cookie";
 import { RootState, useAppSelector } from "../../redux/store";
-// export const API_BASE_URL =
-//     "https://thanhtrongsport-be-production.up.railway.app";
+export const API_BASE_URL =
+    "https://thanhtrongsport-be-production.up.railway.app";
 
-export const API_BASE_URL = "http://localhost:8080";
+// export const API_BASE_URL = "http://localhost:8080";
 
-// export const OAUTH2_REDIRECT_URI = "https://thanhtrongntt.github.io/KLTNShopsy";
-export const OAUTH2_REDIRECT_URI = "http://localhost:3080/";
+export const OAUTH2_REDIRECT_URI = "https://kltn-shopsy.vercel.app/";
+// export const OAUTH2_REDIRECT_URI = "http://localhost:3080/";
 
 export const GOOGLE_AUTH_URL =
     API_BASE_URL +
