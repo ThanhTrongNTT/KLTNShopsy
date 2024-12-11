@@ -41,9 +41,11 @@ const HomePage = () => {
     }, [error]);
 
     useEffect(() => {
-        Cookies.set("accessToken", accessToken);
-        Cookies.set("refreshToken", refreshToken);
-        Cookies.set("oAuth2", "true");
+        if (accessToken && refreshToken) {
+            Cookies.set("accessToken", accessToken);
+            Cookies.set("refreshToken", refreshToken);
+            Cookies.set("oAuth2", "true");
+        }
         window.location.href = "/";
     }, [accessToken, refreshToken]);
 
