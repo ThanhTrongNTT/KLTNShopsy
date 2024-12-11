@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-const flowbite = require("flowbite-react/tailwind");
+import flowbite from "flowbite-react/tailwind";
 
 /** @type {import('tailwindcss').Config} */
 
@@ -8,9 +8,19 @@ export default {
     darkMode: "class",
     theme: {
         extend: {
+            fontFamily: {
+                Poppins: ["Poppins", "sans-serif"],
+                OpenSans: ["Open Sans", "sans-serif"],
+                Roboto: ["Roboto", "sans-serif"],
+                DMSans: ["DM Sans", "sans-serif"],
+                Epilogue: ["Epilogue", "sans-serif"],
+                PassionOne: ["Passion One", "cursive"],
+                Muli: ["Muli", "sans-serif"],
+            },
             colors: {
                 primary: "#fea928",
                 secondary: "#ed8900",
+                "gray-button": "#f4f4f4",
             },
             container: {
                 center: true,
