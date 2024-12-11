@@ -35,6 +35,8 @@ const HomePage = () => {
     }, [error]);
     useEffect(() => {
         const isOAuth2 = Cookies.get("oAuth2");
+        console.log("isOAuth2", isOAuth2);
+
         if (isOAuth2 === "true") {
             setIsOAuth(true);
         }
