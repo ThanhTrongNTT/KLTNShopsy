@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import Hero from "../components/Hero/Hero";
 import Products from "../components/Products/Products";
@@ -21,7 +21,7 @@ const HomePage = () => {
     const { userInfo } = useAppSelector((state: RootState) => state.user);
     const dispatch = useAppDispatch();
     const location = useLocation();
-    const isOAuth2 = Cookies.get("oAuth2") || "";
+    const [isOAuth2, setIsOAuth] = useState(false);
     const error = new URLSearchParams(location.search).get("error") || "";
     useEffect(() => {
         if (error === "access_denied") {
@@ -34,8 +34,15 @@ const HomePage = () => {
         }
     }, [error]);
     useEffect(() => {
+        const isOAuth2 = Cookies.get("oAuth2");
+        if (isOAuth2 === "true") {
+            setIsOAuth(true);
+        }
+    }, []);
+    useEffect(() => {
         const getUserInfo = async () => {
             await Cookies.remove("oAuth2");
+            setIsOAuth(false);
             const accessToken = await Cookies.get("accessToken");
             const decode: JWTType = await jwtDecode(accessToken || "");
             await userApi
