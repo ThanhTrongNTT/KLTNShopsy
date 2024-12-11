@@ -11,6 +11,8 @@ import ButtonSubmit from "../../components/button/ButtonSubmit";
 import { useForm } from "react-hook-form";
 import { User } from "../../data/User";
 import OrderHistory from "./OrderHistory";
+import { Order } from "../../data/Order";
+import orderApi from "../../libs/api/order.api";
 
 const ProfilePage = () => {
     const [disable, setDisable] = useState(true);
@@ -30,7 +32,26 @@ const ProfilePage = () => {
 
     const userName = window.location.pathname.split("/")[2];
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [orderHistory, setOrderHistory] = useState<Order[]>([]);
     const navigate = useNavigate();
+
+    const fetchOrderHistory = async () => {
+        orderApi
+            .getOrderByUser(
+                userInfo?.email || "",
+                currentPage - 1,
+                5,
+                "createdAt",
+                "desc"
+            )
+            .then((res) => {
+                setOrderHistory(res.data.items);
+                setTotalPage(res.data.totalPages);
+                setCurrentPage(res.data.currentPage);
+            });
+    };
 
     const handleEditProfile = () => {
         setDisableBtnEdit(!disableBtnEdit);

@@ -2,11 +2,48 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "flowbite-react";
+import { Order } from "../../data/Order";
+import orderApi from "../../libs/api/order.api";
+export const STATUS_OPTIONS = [
+    { label: "Order Placed", value: "ORDER_PLACED", color: "bg-blue-500" },
+    { label: "Paid", value: "PAID", color: "bg-green-500" },
+    { label: "Pending", value: "PENDING", color: "bg-yellow-500" },
+    { label: "Processing", value: "PROCESSING", color: "bg-yellow-500" },
+    { label: "Shipped", value: "SHIPPED", color: "bg-purple-500" },
+    { label: "Delivered", value: "DELIVERED", color: "bg-green-700" },
+    { label: "Canceled", value: "CANCELED", color: "bg-red-500" },
+];
 
 const OrderHistory = () => {
     const { userInfo } = useAppSelector((state) => state.user);
     const [loading, setLoading] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [orderHistory, setOrderHistory] = useState<Order[]>([]);
     const navigate = useNavigate();
+
+    const onPageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const fetchOrderHistory = async () => {
+        orderApi
+            .getOrderByUser(
+                userInfo?.email || "",
+                currentPage - 1,
+                5,
+                "createdAt",
+                "desc"
+            )
+            .then((res) => {
+                setOrderHistory(res.data.items);
+                setTotalPage(res.data.totalPages);
+            });
+    };
+    useEffect(() => {
+        fetchOrderHistory();
+    }, [currentPage]);
     useEffect(() => {
         if (userInfo.id === "") {
             navigate("/login");
@@ -26,6 +63,9 @@ const OrderHistory = () => {
                         <thead>
                             <tr>
                                 <th scope="col" className="p-3">
+                                    Name
+                                </th>
+                                <th scope="col" className="p-3">
                                     Total Price
                                 </th>
                                 <th scope="col" className="p-3">
@@ -37,125 +77,76 @@ const OrderHistory = () => {
                                 <th scope="col" className="p-3">
                                     Is Paid
                                 </th>
-                                <th scope="col" className="p-3 text-center">
-                                    Action
-                                </th>
                             </tr>
                         </thead>
-                        {/* <tbody>
-                                {orders.map((order: Order, index) => {
-                                    const currentStatus = STATUS_OPTIONS.find(
-                                        (status) =>
-                                            status.value === order.status
-                                    );
-                                    return (
-                                        <tr
-                                            className="bg-white border border-gray-c2 hover:bg-gray-c2 cursor-pointer"
-                                            key={index}
+                        <tbody>
+                            {orderHistory.map((order: Order, index) => {
+                                const currentStatus = STATUS_OPTIONS.find(
+                                    (status) => status.value === order.status
+                                );
+                                return (
+                                    <tr
+                                        className="bg-white border border-gray-c2 hover:bg-gray-c2 cursor-pointer"
+                                        key={index}
+                                    >
+                                        <th
+                                            scope="row"
+                                            className="py-4 px-6 font-medium whitespace-nowrap"
                                         >
-                                            <th
-                                                scope="row"
-                                                className="py-4 px-6 font-medium text-black whitespace-nowrap"
+                                            {order.address?.firstName +
+                                                " " +
+                                                order.address?.lastName}
+                                        </th>
+                                        <th
+                                            scope="row"
+                                            className="py-4 px-6 font-medium whitespace-nowrap"
+                                        >
+                                            {order.total?.toLocaleString(
+                                                "it-IT",
+                                                {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }
+                                            )}
+                                        </th>
+                                        <th
+                                            scope="row"
+                                            className="py-4 px-6 font-medium whitespace-nowrap"
+                                        >
+                                            <span
+                                                className={`p-2 text-sm rounded-full border-none  text-white ${
+                                                    currentStatus?.color ||
+                                                    "bg-gray-400"
+                                                }`}
                                             >
-                                                {order.id}
-                                            </th>
-                                            <th
-                                                scope="row"
-                                                className="py-4 px-6 font-medium text-black whitespace-nowrap"
-                                            >
-                                                {order.user?.userName}
-                                            </th>
-                                            <th
-                                                scope="row"
-                                                className="py-4 px-6 font-medium whitespace-nowrap"
-                                            >
-                                                {order.total?.toLocaleString(
-                                                    "it-IT",
-                                                    {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    }
-                                                )}
-                                            </th>
-                                            <th className="py-4 px-6 font-medium whitespace-nowrap">
-                                                <select
-                                                    value={order.status}
-                                                    onChange={(e) =>
-                                                        handleStatusChange(
-                                                            order.id ?? "",
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    className={`w-auto h-8 py-1 px-2 text-sm rounded-full border-none  text-white ${
-                                                        currentStatus?.color ||
-                                                        "bg-gray-400"
-                                                    }`}
-                                                >
-                                                    {STATUS_OPTIONS.map(
-                                                        (status) => (
-                                                            <option
-                                                                key={
-                                                                    status.value
-                                                                }
-                                                                value={
-                                                                    status.value
-                                                                }
-                                                            >
-                                                                {status.label}
-                                                            </option>
-                                                        )
-                                                    )}
-                                                </select>
-                                            </th>
-                                            <th
-                                                scope="row"
-                                                className="py-4 px-6 font-medium whitespace-nowrap"
-                                            >
-                                                {order.paymentMethod}
-                                            </th>
-                                            <th
-                                                scope="row"
-                                                className="py-4 px-6 font-medium whitespace-nowrap"
-                                            >
-                                                {order.isPaid
-                                                    ? "Paid"
-                                                    : "Not Paid"}
-                                            </th>
-                                            <th
-                                                scope="row"
-                                                className="py-4 px-6 font-medium text-black whitespace-nowrap"
-                                            >
-                                                <div className="text-center">
-                                                    <span
-                                                        className="text-white hover:bg-white hover:text-black bg-success  rounded-lg px-2 mx-2"
-                                                        onClick={() => {}}
-                                                    >
-                                                        Edit
-                                                    </span>
-                                                    <span
-                                                        className="text-white bg-warning rounded-lg px-2 hover:bg-white hover:text-black mx-2"
-                                                        onClick={() => {}}
-                                                    >
-                                                        Delete
-                                                    </span>
-                                                </div>
-                                            </th>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody> */}
+                                                {order.status}
+                                            </span>
+                                        </th>
+                                        <th
+                                            scope="row"
+                                            className="py-4 px-6 font-medium whitespace-nowrap"
+                                        >
+                                            {order.paymentMethod}
+                                        </th>
+                                        <th
+                                            scope="row"
+                                            className="py-4 px-6 font-medium whitespace-nowrap"
+                                        >
+                                            {order.isPaid ? "Paid" : "Not Paid"}
+                                        </th>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
                     </table>
                 </div>
             </div>
             <div className="flex justify-center">
                 <Pagination
                     showIcons={true}
-                    // currentPage={currentPage}
-                    // totalPages={totalPages}
-                    // onPageChange={onPageChange}
-                    currentPage={1}
-                    totalPages={0}
-                    onPageChange={() => {}}
+                    currentPage={currentPage}
+                    totalPages={totalPage}
+                    onPageChange={onPageChange}
                     layout="pagination"
                 />
             </div>

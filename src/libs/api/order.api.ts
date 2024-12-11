@@ -12,8 +12,14 @@ const orderApi = {
         const url = `/order/${orderRequest.order?.user?.email}/add`;
         return AxiosClient.post(url, orderRequest);
     },
-    getOrderByUser: async (email: string): Promise<PageResponse<Order>> => {
-        const url = `/orders/email/${email}`;
+    getOrderByUser: async (
+        email: string,
+        pageNo: number,
+        pageSize: number,
+        sortBy: string,
+        sortDir: string
+    ): Promise<PageResponse<Order>> => {
+        const url = `/orders/email/${email}?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}&sortDir=${sortDir}`;
         return AxiosClient.get(url);
     },
     paymentMomo: async (order: Order): Promise<ApiResponse<string>> => {
