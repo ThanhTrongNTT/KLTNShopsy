@@ -51,7 +51,7 @@ const HomePage = () => {
 
     useEffect(() => {
         const getUserInfo = async () => {
-            const decode: JWTType = await jwtDecode(accessToken || "");
+            const decode: JWTType = await jwtDecode(accessToken);
             await userApi
                 .getMe(decode.sub)
                 .then((res) => {
@@ -75,7 +75,7 @@ const HomePage = () => {
                     });
                 });
         };
-        if (Cookies.get("oAuth2") === "true") {
+        if (isOAuth2) {
             getUserInfo();
         }
     }, [isOAuth2]);

@@ -74,9 +74,10 @@ const Navbar = () => {
         AuthenticationApi.logout().then(async (res) => {
             console.log(res);
             const allCookies = Cookies.get();
+            Cookies.clear();
             dispatch(clearUser());
             Object.keys(allCookies).forEach((cookieName) => {
-                Cookies.remove(cookieName, { path: "/" });
+                Cookies.remove(cookieName);
             });
             // await window.location.reload();
             toast.success("Logout success!", {
