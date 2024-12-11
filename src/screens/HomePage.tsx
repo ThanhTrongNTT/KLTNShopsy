@@ -22,8 +22,13 @@ const HomePage = () => {
     const { userInfo } = useAppSelector((state: RootState) => state.user);
     const dispatch = useAppDispatch();
     const location = useLocation();
-    const [isOAuth2, setIsOAuth] = useState(false);
     const error = new URLSearchParams(location.search).get("error") || "";
+    const isOAuth2 =
+        new URLSearchParams(location.search).get("oAuth2") === "true" || "";
+    const accessToken =
+        new URLSearchParams(location.search).get("accessToken") || "";
+    const refreshToken =
+        new URLSearchParams(location.search).get("refreshToken") || "";
     useEffect(() => {
         if (error === "access_denied") {
             toast.error("Đăng nhập không thành công", {
@@ -34,26 +39,14 @@ const HomePage = () => {
             });
         }
     }, [error]);
-    useEffect(() => {
-        const getOAuth2 = async () => {
-            const isOAuth2 = await Cookies.get("oAuth2");
-            const accessToken = await Cookies.get("accessToken");
-            const accessTokenNext = await getCookie("accessToken");
-            console.log("accessToken", accessToken);
-            console.log("accessTokenNext", accessTokenNext);
 
-            console.log("isOAuth2", isOAuth2);
-            if (isOAuth2 === "true") {
-                setIsOAuth(true);
-            }
-        };
-        getOAuth2();
-    }, []);
+    useEffect(() => {
+        Cookies.set("accessToken", accessToken);
+        Cookies.set("refreshToken", refreshToken);
+    }, [accessToken, refreshToken]);
+
     useEffect(() => {
         const getUserInfo = async () => {
-            await Cookies.remove("oAuth2");
-            setIsOAuth(false);
-            const accessToken = await Cookies.get("accessToken");
             const decode: JWTType = await jwtDecode(accessToken || "");
             await userApi
                 .getMe(decode.sub)
