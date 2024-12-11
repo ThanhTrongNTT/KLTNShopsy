@@ -43,7 +43,7 @@ const HomePage = () => {
                 .then((res) => {
                     const userProfile: User = res.data;
                     dispatch(update(userProfile));
-                    toast.success("Login Success!", {
+                    toast.success("Đăng nhập thành công!", {
                         autoClose: 500,
                         delay: 10,
                         draggable: true,
