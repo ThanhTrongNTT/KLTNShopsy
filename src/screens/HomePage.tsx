@@ -41,6 +41,7 @@ const HomePage = () => {
                 setIsOAuth(true);
             }
         };
+        getOAuth2();
     }, []);
     useEffect(() => {
         const getUserInfo = async () => {
