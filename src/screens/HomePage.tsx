@@ -23,8 +23,7 @@ const HomePage = () => {
     const dispatch = useAppDispatch();
     const location = useLocation();
     const error = new URLSearchParams(location.search).get("error") || "";
-    const isOAuth2 =
-        new URLSearchParams(location.search).get("oAuth2") === "true" || "";
+    const isOAuth2 = new URLSearchParams(location.search).get("oAuth2") || "";
     const accessToken =
         new URLSearchParams(location.search).get("accessToken") || "";
     const refreshToken =
@@ -39,18 +38,10 @@ const HomePage = () => {
             });
         }
     }, [error]);
-
-    useEffect(() => {
-        if (accessToken && refreshToken) {
-            Cookies.set("accessToken", accessToken);
-            Cookies.set("refreshToken", refreshToken);
-            Cookies.set("oAuth2", "true");
-            window.location.href = "/";
-        }
-    }, [accessToken, refreshToken]);
-
     useEffect(() => {
         const getUserInfo = async () => {
+            Cookies.set("accessToken", accessToken);
+            Cookies.set("refreshToken", refreshToken);
             const decode: JWTType = await jwtDecode(accessToken);
             await userApi
                 .getMe(decode.sub)
@@ -64,6 +55,7 @@ const HomePage = () => {
                         pauseOnHover: true,
                     });
                     console.log("userInfo", userInfo);
+                    window.location.href = "/";
                 })
                 .catch((err) => {
                     toast.error(err.message, {
