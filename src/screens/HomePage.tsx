@@ -36,6 +36,9 @@ const HomePage = () => {
     useEffect(() => {
         const getOAuth2 = async () => {
             const isOAuth2 = await Cookies.get("oAuth2");
+            const accessToken = await Cookies.get("accessToken");
+            console.log("accessToken", accessToken);
+
             console.log("isOAuth2", isOAuth2);
             if (isOAuth2 === "true") {
                 setIsOAuth(true);

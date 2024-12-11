@@ -10,7 +10,6 @@ const baseURLAPI =
 const AxiosClient = axios.create({
     // baseURL: process.env.REACT_APP_API_URL,
     baseURL: baseURLAPI,
-    withCredentials: true,
     headers: {
         "Content-Type": "application/json",
     },
