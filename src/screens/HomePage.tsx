@@ -16,6 +16,7 @@ import userApi from "../libs/api/user.api";
 import { update } from "../redux/slices/userSlice";
 import { User } from "../data/User";
 import { useLocation } from "react-router-dom";
+import { getCookie } from "cookies-next";
 
 const HomePage = () => {
     const { userInfo } = useAppSelector((state: RootState) => state.user);
@@ -37,7 +38,9 @@ const HomePage = () => {
         const getOAuth2 = async () => {
             const isOAuth2 = await Cookies.get("oAuth2");
             const accessToken = await Cookies.get("accessToken");
+            const accessTokenNext = await getCookie("accessToken");
             console.log("accessToken", accessToken);
+            console.log("accessTokenNext", accessTokenNext);
 
             console.log("isOAuth2", isOAuth2);
             if (isOAuth2 === "true") {

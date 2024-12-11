@@ -213,12 +213,9 @@ const Navbar = () => {
             <div data-aos="zoom-in" className="flex justify-center">
                 <ul className="sm:flex hidden items-center gap-4">
                     <li key={1} className="group relative cursor-pointer">
-                        <a
-                            href={"/KLTNShopsy"}
-                            className="px-4 flex items-center"
-                        >
+                        <Link to={"/"} className="px-4 flex items-center">
                             Trang chủ
-                        </a>
+                        </Link>
                     </li>
                     {menu.map((data) => (
                         <li
