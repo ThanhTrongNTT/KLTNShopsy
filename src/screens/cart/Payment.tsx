@@ -32,30 +32,29 @@ const Payment = () => {
         await orderApi.createOrder(orderWithItem).then((response) => {
             if (response.result) {
                 console.log("Order created: ", response.data);
-                setOrder(response.data);
                 dispatch(clearCart());
+                setOrder(response.data);
+                if (paymentMethod === "Momo") {
+                    orderApi.paymentMomo(response.data).then((response) => {
+                        if (response.result) {
+                            console.log("Redirect to Momo: ", response.data);
+                            const data = JSON.parse(response.data);
+                            window.location.href = data.payUrl;
+                            localStorage.removeItem("order");
+                        }
+                    });
+                } else {
+                    localStorage.removeItem("order");
+                    toast.success("Order has been created successfully.", {
+                        autoClose: 1000,
+                        pauseOnHover: true,
+                        draggable: true,
+                        delay: 50,
+                    });
+                    navigate("/profile", { replace: true });
+                }
             }
         });
-        if (paymentMethod === "Momo") {
-            await orderApi.paymentMomo(order).then((response) => {
-                if (response.result) {
-                    console.log("Redirect to Momo: ", response.data);
-                    const data = JSON.parse(response.data);
-
-                    window.location.href = data.payUrl;
-                    localStorage.removeItem("order");
-                }
-            });
-        } else {
-            localStorage.removeItem("order");
-            toast.success("Order has been created successfully.", {
-                autoClose: 1000,
-                pauseOnHover: true,
-                draggable: true,
-                delay: 50,
-            });
-            navigate("/profile", { replace: true });
-        }
     };
 
     useEffect(() => {
