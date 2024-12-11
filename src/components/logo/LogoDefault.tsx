@@ -13,7 +13,7 @@ const LogoDefault = ({ className = "" }) => {
                     className
                 )}
             >
-                <img src="/src/assets/logo.png" alt="" className="h-10 w-10" />
+                <img src="./src/assets/logo.png" alt="" className="h-10 w-10" />
                 <div className="text-sm font-bold text-c2 lg:text-xl text-black">
                     Sport Store
                 </div>
