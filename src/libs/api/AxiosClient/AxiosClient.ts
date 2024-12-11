@@ -13,6 +13,7 @@ const AxiosClient = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
+    withCredentials: true,
 });
 // @ts-ignore
 AxiosClient.interceptors.request.use(async (config: AxiosRequestConfig) => {
