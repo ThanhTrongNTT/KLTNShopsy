@@ -32,26 +32,7 @@ const ProfilePage = () => {
 
     const userName = window.location.pathname.split("/")[2];
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPage, setTotalPage] = useState(1);
-    const [orderHistory, setOrderHistory] = useState<Order[]>([]);
     const navigate = useNavigate();
-
-    const fetchOrderHistory = async () => {
-        orderApi
-            .getOrderByUser(
-                userInfo?.email || "",
-                currentPage - 1,
-                5,
-                "createdAt",
-                "desc"
-            )
-            .then((res) => {
-                setOrderHistory(res.data.items);
-                setTotalPage(res.data.totalPages);
-                setCurrentPage(res.data.currentPage);
-            });
-    };
 
     const handleEditProfile = () => {
         setDisableBtnEdit(!disableBtnEdit);

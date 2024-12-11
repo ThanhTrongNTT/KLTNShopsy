@@ -35,10 +35,10 @@ const Payment = () => {
                 dispatch(clearCart());
                 setOrder(response.data);
                 if (paymentMethod === "Momo") {
-                    orderApi.paymentMomo(response.data).then((response) => {
-                        if (response.result) {
-                            console.log("Redirect to Momo: ", response.data);
-                            const data = JSON.parse(response.data);
+                    orderApi.paymentMomo(response.data).then((res) => {
+                        if (res.result) {
+                            console.log("Redirect to Momo: ", res.data);
+                            const data = JSON.parse(res.data);
                             window.location.href = data.payUrl;
                             localStorage.removeItem("order");
                         }

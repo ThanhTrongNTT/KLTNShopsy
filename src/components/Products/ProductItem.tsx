@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ImageCustom from "../Image/ImageCustom";
 import StarRating from "../rating/StarRating";
 import { Product } from "../../data/Product";
@@ -9,21 +9,36 @@ interface ProductItemProps {
 }
 const ProductItem = ({ product }: ProductItemProps) => {
     const navigate = useNavigate();
-
+    const location = useLocation();
+    const [hasReloaded, setHasReloaded] = useState(false);
     const getRandomStar = () => {
-        // Tạo số ngẫu nhiên từ 1 đến 5 với bước nhảy 0.5
         const randomValue = Math.random() * (5 - 1) + 1;
         return Math.round(randomValue * 2) / 2;
     };
+    const handleNavigate = () => {
+        const path = encodeURIComponent(product.slug ?? "");
+        navigate(`/product/${path}`);
+    };
+    useEffect(() => {
+        const path = encodeURIComponent(product.slug ?? "");
+        setHasReloaded(true);
+        if (location.pathname === `/product/${path}` && hasReloaded) {
+            setHasReloaded(false);
+            window.location.reload();
+        }
+    }, [location.pathname, product.slug]);
     return (
         <div className="flex max-w-xs h-full flex-col overflow-hidden rounded-lg border border-gray-100 dark:border-[#424242] bg-white dark:bg-[#1E1E1E]  transition transform ease-in-out duration-300 hover:scale-105 dark:hover:shadow-gray-800 hover:shadow-lg">
             <div
                 className="relative mx-3 mt-3 flex h-70 overflow-hidden rounded-xl cursor-pointer"
-                onClick={() => navigate(`/product/${product.slug}`)}
+                onClick={handleNavigate}
             >
                 <ImageCustom
                     className="object-cover w-full"
-                    src={"https://readymadeui.com/images/product1.webp"}
+                    src={
+                        product.subImages?.[0]?.url ||
+                        "https://readymadeui.com/images/product1.webp"
+                    }
                     alt=""
                 />
             </div>

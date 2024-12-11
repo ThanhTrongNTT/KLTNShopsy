@@ -41,6 +41,10 @@ const DetailProductPage = () => {
     const [productItems, setProductItems] = useState<ProductItemInterface[]>(
         []
     );
+    const [mainSource, setMainSource] = useState<string>(
+        product?.subImages?.[0]?.url ||
+            "https://readymadeui.com/images/product1.webp"
+    );
     const [selectedProduct, setSelectedProduct] =
         useState<ProductItemInterface>(initProductItem);
     const popularList = useAppSelector(getPopularProducts);
@@ -165,6 +169,7 @@ const DetailProductPage = () => {
                         if (res.data.id) {
                             getProductItemsList(res.data.id);
                         }
+                        setMainSource(res.data?.subImages?.[0]?.url || "");
                     }
                 })
                 .catch((err) => {
@@ -218,20 +223,18 @@ const DetailProductPage = () => {
                     <div className="w-full top-0 text-center">
                         <div className="flex justify-center">
                             <img
-                                src={
-                                    "https://readymadeui.com/images/product1.webp"
-                                }
+                                src={mainSource}
                                 alt="Shirt"
                                 className="lg:w-2/3 w-1/3 h-1/3 lg:h-full rounded-xl object-cover object-top"
                             />
                         </div>
                         <div className="flex gap-x-8 gap-y-6 justify-center mx-auto mt-6">
                             {product?.subImages &&
-                                product?.subImages.length > 1 &&
+                                product?.subImages.length > 0 &&
                                 product?.subImages.map((image) => (
                                     <img
                                         key={image.id}
-                                        // onClick={() => setImage(image.url)}
+                                        onClick={() => setMainSource(image.url)}
                                         src={image.url}
                                         alt={image.fileName}
                                         className="w-20 cursor-pointer rounded-xl overflow-hidden transition transform duration-300 ease-in-out hover:scale-110 hover:border hover:border-gray-300"
