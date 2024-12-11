@@ -34,12 +34,13 @@ const HomePage = () => {
         }
     }, [error]);
     useEffect(() => {
-        const isOAuth2 = Cookies.get("oAuth2");
-        console.log("isOAuth2", isOAuth2);
-
-        if (isOAuth2 === "true") {
-            setIsOAuth(true);
-        }
+        const getOAuth2 = async () => {
+            const isOAuth2 = await Cookies.get("oAuth2");
+            console.log("isOAuth2", isOAuth2);
+            if (isOAuth2 === "true") {
+                setIsOAuth(true);
+            }
+        };
     }, []);
     useEffect(() => {
         const getUserInfo = async () => {
