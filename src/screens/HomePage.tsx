@@ -43,6 +43,8 @@ const HomePage = () => {
     useEffect(() => {
         Cookies.set("accessToken", accessToken);
         Cookies.set("refreshToken", refreshToken);
+        Cookies.set("oAuth2", "true");
+        window.location.href = "/";
     }, [accessToken, refreshToken]);
 
     useEffect(() => {
@@ -59,7 +61,6 @@ const HomePage = () => {
                         draggable: true,
                         pauseOnHover: true,
                     });
-
                     console.log("userInfo", userInfo);
                 })
                 .catch((err) => {
@@ -72,7 +73,7 @@ const HomePage = () => {
                     });
                 });
         };
-        if (isOAuth2) {
+        if (Cookies.get("oAuth2") === "true") {
             getUserInfo();
         }
     }, [isOAuth2]);
