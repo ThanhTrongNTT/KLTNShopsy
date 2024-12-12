@@ -189,7 +189,11 @@ const DetailProductPage = () => {
     }, []);
 
     useEffect(() => {
-        getProduct();
+        const reset = async () => {
+            await setMainSource("");
+            await getProduct();
+        };
+        reset();
     }, [slug]);
 
     const handleColorChange = (item: ColorWithSizes) => {
