@@ -223,16 +223,6 @@ const DetailProductPage = () => {
                     currentUrl
                 )}`;
                 break;
-            case "line":
-                shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
-                    currentUrl
-                )}`;
-                break;
-            case "instagram":
-                alert(
-                    "Instagram không hỗ trợ chia sẻ qua URL. Vui lòng tự sao chép và chia sẻ."
-                ); // Instagram không hỗ trợ chia sẻ qua URL
-                return;
             default:
                 return;
         }
@@ -255,12 +245,6 @@ const DetailProductPage = () => {
                         </div>
                         <div
                             className="cursor-pointer"
-                            onClick={() => handleShare("instagram")}
-                        >
-                            <FaInstagram />
-                        </div>
-                        <div
-                            className="cursor-pointer"
                             onClick={() => handleShare("twitter")}
                         >
                             <FaSquareXTwitter />
@@ -270,12 +254,6 @@ const DetailProductPage = () => {
                             onClick={() => handleShare("linkedin")}
                         >
                             <FaLinkedin />
-                        </div>
-                        <div
-                            className="text-green-700 cursor-pointer"
-                            onClick={() => handleShare("line")}
-                        >
-                            <FaLine />
                         </div>
                     </div>
                 </Modal.Body>
