@@ -21,10 +21,13 @@ const ProductItem = ({ product }: ProductItemProps) => {
     };
     useEffect(() => {
         const path = encodeURIComponent(product.slug ?? "");
-        setHasReloaded(true);
-        if (location.pathname === `/product/${path}` && hasReloaded) {
+        if (location.pathname === `/product/${path}`) {
+            if (!hasReloaded) {
+                setHasReloaded(true);
+                window.location.reload();
+            }
+        } else {
             setHasReloaded(false);
-            window.location.reload();
         }
     }, [location.pathname, product.slug]);
     return (
