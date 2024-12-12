@@ -11,13 +11,11 @@ const DropdownCart = ({ items }: DropdownCartProps) => {
                 <ul className="divide-y divide-gray-200">
                     {items.map((item, index) => (
                         <li key={index} className="py-2 flex items-center">
-                            <img
-                                // src={item.image}
-                                src={
+                                <img
+                                src={item?.productItem?.product?.subImages?.[0]?.url ||
                                     "https://readymadeui.com/images/product1.webp"
                                 }
-                                alt={"Thanh"}
-                                // alt={item.name}
+                                alt={item.productItem.product?.productName || "Product Image"}
                                 className="w-10 h-10 object-fit rounded-lg"
                             />
                             <div className="ml-3">
