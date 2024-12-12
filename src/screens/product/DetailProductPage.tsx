@@ -526,7 +526,7 @@ const DetailProductPage = () => {
                                     "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
                             )}
                         >
-                            Description
+                            Mô tả sản phẩm
                         </li>
                         <li
                             onClick={() => setTab("review")}
@@ -536,7 +536,7 @@ const DetailProductPage = () => {
                                     "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
                             )}
                         >
-                            Reviews
+                            Thông tin sản phẩm
                         </li>
                         <li
                             onClick={() => setTab("rating")}
@@ -546,39 +546,30 @@ const DetailProductPage = () => {
                                     "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
                             )}
                         >
-                            Ratings
+                            Thông tin giặt giũ
                         </li>
                     </ul>
                     {tab === "description" ? (
                         <>
                             <div className="mt-8">
                                 <h3 className="text-lg font-bold text-gray-800">
-                                    Mô tả sản phẩm
+                                {product?.longDescription}
                                 </h3>
-                                <p className="text-sm text-gray-400 mt-4">
-                                    {product?.longDescription}
-                                </p>
                             </div>
                         </>
                     ) : tab === "review" ? (
                         <>
                             <div className="mt-8">
                                 <h3 className="text-lg font-bold text-gray-800">
-                                    Thông tin sản phẩm
-                                </h3>
-                                <p className="text-sm text-gray-400 mt-4">
                                     {product?.freeInformation}
-                                </p>
+                                </h3>
                             </div>
                         </>
                     ) : (
                         <div className="mt-8">
                             <h3 className="text-lg font-bold text-gray-800">
-                                Thông tin giặt giũ
+                            {product?.washingInformation}
                             </h3>
-                            <p className="text-sm text-gray-400 mt-4">
-                                {product?.washingInformation}
-                            </p>
                         </div>
                     )}
                 </div>
