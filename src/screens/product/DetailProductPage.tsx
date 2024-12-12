@@ -45,8 +45,7 @@ const DetailProductPage = () => {
         []
     );
     const [mainSource, setMainSource] = useState<string>(
-        product?.subImages?.[0]?.url ||
-            "https://readymadeui.com/images/product1.webp"
+        product?.subImages?.[0]?.url || ""
     );
     const [selectedProduct, setSelectedProduct] =
         useState<ProductItemInterface>(initProductItem);
@@ -231,6 +230,13 @@ const DetailProductPage = () => {
         window.open(shareUrl, "_blank", "width=600,height=400");
     };
 
+    const [loadingMain, setLoadingMain] = useState(true);
+    const [loadingSubImages, setLoadingSubImages] = useState({});
+
+    const handleImageLoad = (id) => {
+        setLoadingSubImages((prev) => ({ ...prev, [id]: false }));
+    };
+
     return (
         <div className="font-[sans-serif]">
             <Modal show={showModal} onClose={() => setShowModal(false)}>
@@ -279,14 +285,25 @@ const DetailProductPage = () => {
                 <div className="grid items-start grid-cols-1 lg:grid-cols-2 gap-10">
                     <div className="w-full top-0 text-center">
                         <div className="flex justify-center">
-                            <img
+                            {/* <img
                                 src={mainSource}
                                 alt="Shirt"
                                 className="lg:w-2/3 w-1/3 h-1/3 lg:h-full rounded-xl object-cover object-top"
+                            /> */}
+                            {loadingMain && (
+                                <div className="lg:w-2/3 w-1/3 h-1/3 lg:h-full rounded-xl bg-gray-300 animate-pulse"></div>
+                            )}
+                            <img
+                                src={mainSource}
+                                alt="Shirt"
+                                className={`lg:w-2/3 w-1/3 h-1/3 lg:h-full rounded-xl object-cover object-top ${
+                                    loadingMain ? "hidden" : ""
+                                }`}
+                                onLoad={() => setLoadingMain(false)}
                             />
                         </div>
                         <div className="flex gap-x-8 gap-y-6 justify-center mx-auto mt-6">
-                            {product?.subImages &&
+                            {/* {product?.subImages &&
                                 product?.subImages.length > 0 &&
                                 product?.subImages.map((image) => (
                                     <img
@@ -296,6 +313,36 @@ const DetailProductPage = () => {
                                         alt={image.fileName}
                                         className="w-20 cursor-pointer rounded-xl overflow-hidden transition transform duration-300 ease-in-out hover:scale-110 hover:border hover:border-gray-300"
                                     />
+                                ))} */}
+                            {product?.subImages &&
+                                product?.subImages.length > 0 &&
+                                product?.subImages.map((image) => (
+                                    <div
+                                        key={image.id}
+                                        className="w-20 h-20 rounded-xl relative overflow-hidden cursor-pointer"
+                                    >
+                                        {/* Skeleton cho ảnh phụ */}
+                                        {loadingSubImages[image.id] !==
+                                            false && (
+                                            <div className="w-full h-full bg-gray-300 animate-pulse rounded-xl"></div>
+                                        )}
+                                        <img
+                                            src={image.url}
+                                            alt={image.fileName}
+                                            className={`w-full h-full object-cover rounded-xl transition transform duration-300 ease-in-out hover:scale-110 hover:border hover:border-gray-300 ${
+                                                loadingSubImages[image.id] !==
+                                                false
+                                                    ? "hidden"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                setMainSource(image.url)
+                                            }
+                                            onLoad={() =>
+                                                handleImageLoad(image.id)
+                                            }
+                                        />
+                                    </div>
                                 ))}
                         </div>
                     </div>
