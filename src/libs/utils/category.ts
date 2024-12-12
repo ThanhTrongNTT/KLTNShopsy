@@ -26,7 +26,7 @@ export const formatCategories = (categories: Category[]) => {
     });
 
     const sortCategories = (categories: (Category & { children: Category[] })[]) => {
-        categories.sort((a, b) => new Date(a.createDate).getTime() - new Date(b.createDate).getTime());
+        categories.sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime());
         categories.forEach((category) => {
             if (category.children.length > 0) {
                 sortCategories(category.children);

@@ -4,5 +4,5 @@ export interface Category {
     locale: string;
     children: Category[];
     parentCategory: Category | null;
-    createDate: string;
+    createdDate: string;
 }
