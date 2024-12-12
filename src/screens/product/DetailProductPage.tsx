@@ -171,6 +171,7 @@ const DetailProductPage = () => {
                         if (res.data.id) {
                             getProductItemsList(res.data.id);
                         }
+                        setLoadingMain(true);
                         setMainSource(res.data?.subImages?.[0]?.url || "");
                     }
                 })
@@ -189,11 +190,7 @@ const DetailProductPage = () => {
     }, []);
 
     useEffect(() => {
-        const reset = async () => {
-            await setMainSource("");
-            await getProduct();
-        };
-        reset();
+        getProduct();
     }, [slug]);
 
     const handleColorChange = (item: ColorWithSizes) => {
