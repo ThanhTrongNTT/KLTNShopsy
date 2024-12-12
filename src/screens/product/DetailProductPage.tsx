@@ -244,38 +244,41 @@ const DetailProductPage = () => {
     return (
         <div className="font-[sans-serif]">
             <Modal show={showModal} onClose={() => setShowModal(false)}>
-                <div className="flex gap-x-10 text-5xl justify-center p-5">
-                    <div
-                        className="text-blue-900 cursor-pointer"
-                        onClick={() => handleShare("facebook")}
-                    >
-                        <FaFacebook />
+                <Modal.Header>Chia sẻ lên các trang mạng xã hội</Modal.Header>
+                <Modal.Body>
+                    <div className="flex gap-x-10 text-5xl justify-center p-5">
+                        <div
+                            className="text-blue-900 cursor-pointer"
+                            onClick={() => handleShare("facebook")}
+                        >
+                            <FaFacebook />
+                        </div>
+                        <div
+                            className="cursor-pointer"
+                            onClick={() => handleShare("instagram")}
+                        >
+                            <FaInstagram />
+                        </div>
+                        <div
+                            className="cursor-pointer"
+                            onClick={() => handleShare("twitter")}
+                        >
+                            <FaSquareXTwitter />
+                        </div>
+                        <div
+                            className="cursor-pointer"
+                            onClick={() => handleShare("linkedin")}
+                        >
+                            <FaLinkedin />
+                        </div>
+                        <div
+                            className="text-green-700 cursor-pointer"
+                            onClick={() => handleShare("line")}
+                        >
+                            <FaLine />
+                        </div>
                     </div>
-                    <div
-                        className="cursor-pointer"
-                        onClick={() => handleShare("instagram")}
-                    >
-                        <FaInstagram />
-                    </div>
-                    <div
-                        className="cursor-pointer"
-                        onClick={() => handleShare("twitter")}
-                    >
-                        <FaSquareXTwitter />
-                    </div>
-                    <div
-                        className="cursor-pointer"
-                        onClick={() => handleShare("linkedin")}
-                    >
-                        <FaLinkedin />
-                    </div>
-                    <div
-                        className="text-green-700 cursor-pointer"
-                        onClick={() => handleShare("line")}
-                    >
-                        <FaLine />
-                    </div>
-                </div>
+                </Modal.Body>
             </Modal>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex items-baseline justify-between py-3">
