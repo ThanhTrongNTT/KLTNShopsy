@@ -187,8 +187,8 @@ const DetailProductPage = () => {
     }, []);
 
     useEffect(() => {
-        console.log(selectedProduct);
-    }, [selectedProduct]);
+        getProduct();
+    }, [slug]);
 
     const handleColorChange = (item: ColorWithSizes) => {
         setSelectedColor(item);
@@ -330,6 +330,7 @@ const DetailProductPage = () => {
                                                         : "border-gray-300 border-4"
                                                 } hover:border-gray-400 transition-transform duration-200 transform`}
                                                 style={{
+                                                    // backgroundImage: item.productItems[0]?.mainImage?.url,
                                                     backgroundColor:
                                                         item.color.code,
                                                 }}
@@ -644,27 +645,6 @@ const DetailProductPage = () => {
                                     ))}
                             </Slider>
                         </div>
-                    </div>
-                    <div className="py-8">
-                        <div data-aos="fade-up" className="font-bold text-xl">
-                            ĐÃ XEM GẦN ĐÂY
-                        </div>
-                        <Slider
-                            {...settingsSlider}
-                            infinite={bundleList && bundleList.length > 3}
-                        >
-                            {bundleList &&
-                                bundleList.map((item, index) => (
-                                    <div
-                                        key={item.id}
-                                        data-aos="fade-up"
-                                        data-aos-delay={400 + index * 100}
-                                        className="h-[630px]"
-                                    >
-                                        <ProductItem product={item} />
-                                    </div>
-                                ))}
-                        </Slider>
                     </div>
                 </div>
             }

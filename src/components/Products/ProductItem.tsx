@@ -9,8 +9,6 @@ interface ProductItemProps {
 }
 const ProductItem = ({ product }: ProductItemProps) => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const [hasReloaded, setHasReloaded] = useState(false);
     const getRandomStar = () => {
         const randomValue = Math.random() * (5 - 1) + 1;
         return Math.round(randomValue * 2) / 2;
@@ -19,18 +17,6 @@ const ProductItem = ({ product }: ProductItemProps) => {
         const path = encodeURIComponent(product.slug ?? "");
         navigate(`/product/${path}`);
     };
-    useEffect(() => {
-        const path = encodeURIComponent(product.slug ?? "");
-        // setHasReloaded(true);
-        // if (location.pathname === `/product/${path}` && hasReloaded) {
-        //     setHasReloaded(false);
-        //     window.location.reload();
-        // }
-        if (location.pathname === `/product/${path}` && !hasReloaded) {
-            setHasReloaded(true);
-            navigate(location.pathname, { replace: true });
-        }
-    }, [location.pathname, product.slug]);
     return (
         <div className="flex max-w-xs h-full flex-col overflow-hidden rounded-lg border border-gray-100 dark:border-[#424242] bg-white dark:bg-[#1E1E1E]  transition transform ease-in-out duration-300 hover:scale-105 dark:hover:shadow-gray-800 hover:shadow-lg">
             <div
