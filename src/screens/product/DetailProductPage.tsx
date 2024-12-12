@@ -553,7 +553,7 @@ const DetailProductPage = () => {
                         <>
                             <div className="mt-8">
                                 <h3 className="text-lg font-bold text-gray-800">
-                                    Product Description
+                                    Mô tả sản phẩm
                                 </h3>
                                 <p className="text-sm text-gray-400 mt-4">
                                     {product?.longDescription}
@@ -564,31 +564,20 @@ const DetailProductPage = () => {
                         <>
                             <div className="mt-8">
                                 <h3 className="text-lg font-bold text-gray-800">
-                                    Product Review
+                                    Thông tin sản phẩm
                                 </h3>
                                 <p className="text-sm text-gray-400 mt-4">
                                     {product?.freeInformation}
                                 </p>
                             </div>
-                            <ul className="space-y-3 list-disc mt-6 pl-4 text-sm text-gray-400">
-                                <li>{product?.washingInformation}</li>
-                                <li>{product?.freeInformation}</li>
-                            </ul>
                         </>
                     ) : (
                         <div className="mt-8">
                             <h3 className="text-lg font-bold text-gray-800">
-                                Product Rating
+                                Thông tin giặt giũ
                             </h3>
                             <p className="text-sm text-gray-400 mt-4">
-                                Elevate your casual style with our premium men's
-                                t-shirt. Crafted for comfort and designed with a
-                                modern fit, this versatile shirt is an essential
-                                addition to your wardrobe. The soft and
-                                breathable fabric ensures all-day comfort,
-                                making it perfect for everyday wear. Its classic
-                                crew neck and short sleeves offer a timeless
-                                look.
+                                {product?.washingInformation}
                             </p>
                         </div>
                     )}
