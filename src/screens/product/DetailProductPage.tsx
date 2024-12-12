@@ -291,7 +291,7 @@ const DetailProductPage = () => {
                                 className="lg:w-2/3 w-1/3 h-1/3 lg:h-full rounded-xl object-cover object-top"
                             /> */}
                             {loadingMain && (
-                                <div className="lg:w-2/3 w-1/3 h-1/3 lg:h-full rounded-xl bg-gray-300 animate-pulse"></div>
+                                <div className="h-[300px] w-[300px] rounded-xl bg-gray-300 animate-pulse"></div>
                             )}
                             <img
                                 src={mainSource}
