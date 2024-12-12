@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Slider from "react-slick";
 import { LeftArrowIcon, RightArrowIcon } from "../../components/icon/Icon";
 import ProductItem from "../../components/Products/ProductItem";
-import { Breadcrumb } from "flowbite-react";
+import { Breadcrumb, Modal } from "flowbite-react";
 import {
     Color,
     initProductItem,
@@ -24,6 +24,8 @@ import {
     popular,
     viewed,
 } from "../../redux/slices/productSlice";
+import { FaFacebook, FaInstagram, FaLine, FaLinkedin } from "react-icons/fa";
+import { FaSquareXTwitter } from "react-icons/fa6";
 
 interface ColorWithSizes {
     color: Color;
@@ -37,6 +39,7 @@ const DetailProductPage = () => {
     const dispatch = useAppDispatch();
     const { slug } = useParams();
     const cart = useAppSelector((state) => state.cart.items);
+    const [showModal, setShowModal] = useState(false);
     const [product, setProduct] = useState<Product | null>(null);
     const [productItems, setProductItems] = useState<ProductItemInterface[]>(
         []
@@ -199,8 +202,81 @@ const DetailProductPage = () => {
         }
     };
 
+    const currentUrl = window.location.href; // URL hiện tại của trang
+
+    const handleShare = (platform) => {
+        let shareUrl = "";
+
+        switch (platform) {
+            case "facebook":
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    currentUrl
+                )}`;
+                break;
+            case "twitter":
+                shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                    currentUrl
+                )}`;
+                break;
+            case "linkedin":
+                shareUrl = `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(
+                    currentUrl
+                )}`;
+                break;
+            case "line":
+                shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
+                    currentUrl
+                )}`;
+                break;
+            case "instagram":
+                alert(
+                    "Instagram không hỗ trợ chia sẻ qua URL. Vui lòng tự sao chép và chia sẻ."
+                ); // Instagram không hỗ trợ chia sẻ qua URL
+                return;
+            default:
+                return;
+        }
+
+        // Mở cửa sổ chia sẻ trong popup
+        window.open(shareUrl, "_blank", "width=600,height=400");
+    };
+
     return (
         <div className="font-[sans-serif]">
+            <Modal show={showModal} onClose={() => setShowModal(false)}>
+                <div className="flex gap-x-10 text-5xl justify-center p-5">
+                    <div
+                        className="text-blue-900 cursor-pointer"
+                        onClick={() => handleShare("facebook")}
+                    >
+                        <FaFacebook />
+                    </div>
+                    <div
+                        className="cursor-pointer"
+                        onClick={() => handleShare("instagram")}
+                    >
+                        <FaInstagram />
+                    </div>
+                    <div
+                        className="cursor-pointer"
+                        onClick={() => handleShare("twitter")}
+                    >
+                        <FaSquareXTwitter />
+                    </div>
+                    <div
+                        className="cursor-pointer"
+                        onClick={() => handleShare("linkedin")}
+                    >
+                        <FaLinkedin />
+                    </div>
+                    <div
+                        className="text-green-700 cursor-pointer"
+                        onClick={() => handleShare("line")}
+                    >
+                        <FaLine />
+                    </div>
+                </div>
+            </Modal>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex items-baseline justify-between py-3">
                     <Breadcrumb>
@@ -257,12 +333,15 @@ const DetailProductPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        toast.warning("Chức năng đang phát triển!", {
-                                            autoClose: 1000,
-                                            delay: 10,
-                                            draggable: true,
-                                            pauseOnHover: false,
-                                        });
+                                        toast.warning(
+                                            "Chức năng đang phát triển!",
+                                            {
+                                                autoClose: 1000,
+                                                delay: 10,
+                                                draggable: true,
+                                                pauseOnHover: false,
+                                            }
+                                        );
                                     }}
                                     className="px-2.5 py-1.5 bg-pink-100 text-xs text-pink-600 rounded-md flex items-center"
                                 >
@@ -281,6 +360,7 @@ const DetailProductPage = () => {
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={() => setShowModal(true)}
                                     className="px-2.5 py-1.5 bg-gray-100 text-xs text-gray-800 rounded-md flex items-center"
                                 >
                                     <svg
@@ -450,7 +530,7 @@ const DetailProductPage = () => {
                                     </span>
                                 ) : null}
                             </div>
-                            <div className="flex flex-wrap gap-4 h-fit">
+                            {/* <div className="flex flex-wrap gap-4 h-fit">
                                 <span className="px-2.5 py-1.5 bg-pink-100 text-xs text-pink-600 rounded-md flex items-center">
                                     <svg
                                         className="w-3 mr-1"
@@ -487,7 +567,7 @@ const DetailProductPage = () => {
                                     </svg>
                                     87 Reviews
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                         <hr className="my-8" />
                         <div className="flex flex-wrap gap-4">
@@ -552,7 +632,7 @@ const DetailProductPage = () => {
                         <>
                             <div className="mt-8">
                                 <h3 className="text-lg font-bold text-gray-800">
-                                {product?.longDescription}
+                                    {product?.longDescription}
                                 </h3>
                             </div>
                         </>
@@ -567,7 +647,7 @@ const DetailProductPage = () => {
                     ) : (
                         <div className="mt-8">
                             <h3 className="text-lg font-bold text-gray-800">
-                            {product?.washingInformation}
+                                {product?.washingInformation}
                             </h3>
                         </div>
                     )}
