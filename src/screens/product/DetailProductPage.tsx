@@ -257,7 +257,7 @@ const DetailProductPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        toast.success("Add to wishlist", {
+                                        toast.warning("Chức năng đang phát triển!", {
                                             autoClose: 1000,
                                             delay: 10,
                                             draggable: true,
@@ -278,7 +278,6 @@ const DetailProductPage = () => {
                                             data-original="#000000"
                                         ></path>
                                     </svg>
-                                    100
                                 </button>
                                 <button
                                     type="button"
