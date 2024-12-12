@@ -21,13 +21,14 @@ const ProductItem = ({ product }: ProductItemProps) => {
     };
     useEffect(() => {
         const path = encodeURIComponent(product.slug ?? "");
-        if (location.pathname === `/product/${path}`) {
-            if (!hasReloaded) {
-                setHasReloaded(true);
-                window.location.reload();
-            }
-        } else {
-            setHasReloaded(false);
+        // setHasReloaded(true);
+        // if (location.pathname === `/product/${path}` && hasReloaded) {
+        //     setHasReloaded(false);
+        //     window.location.reload();
+        // }
+        if (location.pathname === `/product/${path}` && !hasReloaded) {
+            setHasReloaded(true);
+            navigate(location.pathname, { replace: true });
         }
     }, [location.pathname, product.slug]);
     return (
