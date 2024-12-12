@@ -77,10 +77,10 @@ const CartItem = ({
                             // cartItem.product.images.length > 0
                             // ? cartItem.product.images[0].url
                             // : "https://readymadeui.com/images/product1.webp"
+                            cartItem.product?.subImages?.[0]?.url ||
                             "https://readymadeui.com/images/product1.webp"
                         }
-                        // alt={cartItem.product.productName}
-                        alt={"Thanh Trong"}
+                        alt={cartItem.product?.productName || "Product Image"}
                         rounded
                     />
                 </div>
