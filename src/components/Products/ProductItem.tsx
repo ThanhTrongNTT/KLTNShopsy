@@ -70,10 +70,10 @@ const ProductItem = ({ product }: ProductItemProps) => {
                 <span className="text-base text-red-500 truncate">
                     {product.sales && product.sales.description}
                 </span>
-                <div className="mt-2 mb-5 flex items-end justify-center">
+                {/* <div className="mt-2 mb-5 flex items-end justify-center">
                     <StarRating rating={getRandomStar()} />
                     <span>{"(4)"}</span>
-                </div>
+                </div> */}
             </div>
         </div>
     );
