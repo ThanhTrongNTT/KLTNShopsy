@@ -20,18 +20,30 @@ const ProductPage = () => {
     const [category, setCategory] = useState<Category | null>(null);
     const [menu, setMenu] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [sort, setSort] = useState<string>("modifiedDate");
+    const [sortType, setSortType] = useState<string>("asc");
     const fetchCategories = async () => {
         await CategoryApi.getAllCategory().then((res) => {
             setMenu(formatCategories(res.data));
         });
     };
-    const onShort = (message: string) => {
-        toast.success(message, {
-            autoClose: 500,
-            delay: 10,
-            draggable: true,
-            pauseOnHover: true,
-        });
+    const onShort = (criteria: string) => {
+        switch (criteria) {
+            case "Giá từ thấp đến cao":
+                setSort("price");
+                setSortType("asc");
+                break;
+            case "Giá từ cao đến thấp":
+                setSort("price");
+                setSortType("desc");
+                break;
+            case "Hàng mới về":
+                setSort("createdDate");
+                setSortType("desc");
+                break;
+            default:
+                return;
+        }
     };
     const fetchProducts = async (genderName: string, categoryName: string) => {
         await productApi
@@ -40,8 +52,8 @@ const ProductPage = () => {
                 categoryName,
                 1,
                 10,
-                "modifiedDate",
-                "asc"
+                sort,
+                sortType
             )
             .then((res) => {
                 console.log(res.data.items);
@@ -88,6 +100,15 @@ const ProductPage = () => {
             fetchProducts(activeTab.categoryName, category?.categoryName || "");
         }
     }, [activeTab, category]);
+
+    useEffect(() => {
+        if (sort && sortType) {
+            fetchProducts(
+                activeTab?.categoryName || "",
+                category?.categoryName || ""
+            );
+        }
+    }, [sort, sortType]);
 
     return (
         <div className="bg-white dark:bg-[#121212] dark:text-white min-h-screen">
@@ -176,17 +197,19 @@ const ProductPage = () => {
                                     >
                                         Giá từ thấp đến cao
                                     </Dropdown.Item>
-                                    <Dropdown.Item className="hover:text-blue-400">
+                                    <Dropdown.Item
+                                        className="hover:text-blue-400"
+                                        onClick={() =>
+                                            onShort("Giá từ cao đến thấp")
+                                        }
+                                    >
                                         Giá từ cao đến thấp
                                     </Dropdown.Item>
-                                    <Dropdown.Item className="hover:text-blue-400">
+                                    <Dropdown.Item
+                                        className="hover:text-blue-400"
+                                        onClick={() => onShort("Hàng mới về")}
+                                    >
                                         Hàng mới về
-                                    </Dropdown.Item>
-                                    <Dropdown.Item className="hover:text-blue-400">
-                                        Hàng tiêu biểu
-                                    </Dropdown.Item>
-                                    <Dropdown.Item className="hover:text-blue-400">
-                                        Được đánh giá tốt nhất
                                     </Dropdown.Item>
                                 </Dropdown>
                             </div>
