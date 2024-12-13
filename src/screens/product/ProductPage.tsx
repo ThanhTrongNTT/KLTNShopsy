@@ -30,11 +30,11 @@ const ProductPage = () => {
     const onShort = (criteria: string) => {
         switch (criteria) {
             case "Giá từ thấp đến cao":
-                setSort("price");
+                setSort("promoPrice");
                 setSortType("asc");
                 break;
             case "Giá từ cao đến thấp":
-                setSort("price");
+                setSort("promoPrice");
                 setSortType("desc");
                 break;
             case "Hàng mới về":
