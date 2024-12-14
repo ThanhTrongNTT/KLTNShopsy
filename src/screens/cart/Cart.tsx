@@ -37,7 +37,8 @@ const Cart = () => {
     const handleRemoveFromCart = (id: string) => {
         console.log("id:", id);
         dispatch(removeCart(id));
-        toast.success("Product removed from cart.", {
+        toast.success("Xóa sản phẩm thành công!", {
+            position: "top-center",
             autoClose: 1000,
             pauseOnHover: true,
             draggable: true,
@@ -57,7 +58,8 @@ const Cart = () => {
 
     const handleCheckout = () => {
         if (cart.length === 0) {
-            toast.error("No product to checkout.", {
+            toast.error("Không có sản phẩm để thanh toán!", {
+                position: "top-center",
                 autoClose: 1000,
                 pauseOnHover: true,
                 draggable: true,

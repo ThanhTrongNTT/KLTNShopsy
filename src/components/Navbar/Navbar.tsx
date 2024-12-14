@@ -80,6 +80,7 @@ const Navbar = () => {
             });
             // await window.location.reload();
             toast.success("Logout success!", {
+                position: "top-center",
                 autoClose: 1000,
                 delay: 10,
                 draggable: true,

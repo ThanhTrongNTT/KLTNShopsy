@@ -44,6 +44,7 @@ const SignUpPage = () => {
     const handleRegister = async (data: FieldValues) => {
         if (data.password !== data.confirmPassword) {
             toast.error("Mật khẩu không giống nhau", {
+                position: "top-center",
                 autoClose: 1000,
                 pauseOnHover: false,
                 draggable: true,
@@ -63,6 +64,7 @@ const SignUpPage = () => {
             if (res.result) {
                 navigate("/login");
                 toast.success(res.message, {
+                    position: "top-center",
                     autoClose: 10000,
                     pauseOnHover: true,
                     draggable: true,
@@ -79,6 +81,7 @@ const SignUpPage = () => {
             if (arrErrors[0].message) {
                 const message = arrErrors[0].message;
                 toast.error(message.toString(), {
+                    position: "top-center",
                     autoClose: 1000,
                     pauseOnHover: false,
                     draggable: true,

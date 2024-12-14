@@ -132,7 +132,8 @@ const DetailProductPage = () => {
                 item.size === selectedSize
         );
         dispatch(addToCart(productItem));
-        toast.success("Product added to cart.", {
+        toast.success("Sản phẩm đã được thêm vào giỏ hàng!", {
+            position: "top-center",
             autoClose: 1000,
             pauseOnHover: true,
             draggable: true,
@@ -365,6 +366,7 @@ const DetailProductPage = () => {
                                         toast.warning(
                                             "Chức năng đang phát triển!",
                                             {
+                                                position: "top-center",
                                                 autoClose: 1000,
                                                 delay: 10,
                                                 draggable: true,

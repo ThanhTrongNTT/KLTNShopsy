@@ -31,6 +31,7 @@ const HomePage = () => {
     useEffect(() => {
         if (error === "access_denied") {
             toast.error("Đăng nhập không thành công", {
+                position: "top-center",
                 autoClose: 1000,
                 pauseOnHover: true,
                 draggable: true,
@@ -49,6 +50,7 @@ const HomePage = () => {
                     const userProfile: User = res.data;
                     dispatch(update(userProfile));
                     toast.success("Đăng nhập thành công!", {
+                        position: "top-center",
                         autoClose: 500,
                         delay: 10,
                         draggable: true,
@@ -59,11 +61,11 @@ const HomePage = () => {
                 })
                 .catch((err) => {
                     toast.error(err.message, {
+                        position: "top-center",
                         autoClose: 500,
                         delay: 10,
                         draggable: true,
                         pauseOnHover: false,
-                        position: "bottom-right",
                     });
                 });
         };

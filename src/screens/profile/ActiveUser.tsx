@@ -46,7 +46,7 @@ const ActiveUser = () => {
 
         const redirectToLogin = (message: string) => {
             toast.error(message, {
-                position: "bottom-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

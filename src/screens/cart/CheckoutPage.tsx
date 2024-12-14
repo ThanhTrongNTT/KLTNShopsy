@@ -115,7 +115,8 @@ const CheckoutPage = () => {
     };
     const onSubmit = async (data: FieldValues) => {
         if (userInfo.id === "") {
-            toast.warn("Please login to order", {
+            toast.warn("Hãy đăng nhập để đặt hàng!", {
+                position: "top-center",
                 autoClose: 1000,
                 pauseOnHover: false,
                 draggable: true,
@@ -160,6 +161,7 @@ const CheckoutPage = () => {
             if (arrErrors[0]?.message) {
                 const message = arrErrors[0]?.message;
                 toast.error(message.toString(), {
+                    position: "top-center",
                     autoClose: 1000,
                     pauseOnHover: false,
                     draggable: true,

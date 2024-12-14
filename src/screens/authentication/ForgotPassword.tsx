@@ -33,6 +33,7 @@ const ForgotPassword = () => {
             .then((res) => {
                 if (res.result) {
                     toast.success(res.message, {
+                        position: "top-center",
                         autoClose: 10000,
                         pauseOnHover: false,
                         draggable: true,
@@ -52,6 +53,7 @@ const ForgotPassword = () => {
             if (arrErrors[0].message) {
                 const message = arrErrors[0].message;
                 toast.error(message.toString(), {
+                    position: "top-center",
                     autoClose: 1000,
                     pauseOnHover: false,
                     draggable: true,

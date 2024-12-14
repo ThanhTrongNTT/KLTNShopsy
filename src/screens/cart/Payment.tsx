@@ -45,7 +45,8 @@ const Payment = () => {
                     });
                 } else {
                     localStorage.removeItem("order");
-                    toast.success("Order has been created successfully.", {
+                    toast.success("Đơn hàng đã được tạo thành công!", {
+                        position: "top-center",
                         autoClose: 1000,
                         pauseOnHover: true,
                         draggable: true,
@@ -59,7 +60,8 @@ const Payment = () => {
 
     useEffect(() => {
         if (userInfo.id === "") {
-            toast.error("You need to login to view this page.", {
+            toast.error("Bạn cần đăng nhập để xem trang này!", {
+                position: "top-center",
                 autoClose: 1000,
                 pauseOnHover: true,
                 draggable: true,

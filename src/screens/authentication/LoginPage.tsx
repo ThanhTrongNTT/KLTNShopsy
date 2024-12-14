@@ -50,14 +50,15 @@ const LoginPage = () => {
                     })
                     .catch((err) => {
                         toast.error(err.message, {
+                            position: "top-center",
                             autoClose: 500,
                             delay: 10,
                             draggable: true,
                             pauseOnHover: false,
-                            position: "bottom-right",
                         });
                     });
-                toast.success("Login Success!", {
+                toast.success("Đăng nhập thành công!", {
+                    position: "top-center",
                     autoClose: 500,
                     delay: 10,
                     draggable: true,
@@ -93,7 +94,8 @@ const LoginPage = () => {
             })
             .catch((err) => {
                 if (err.status === 404) {
-                    toast.error(`User does not existed!`, {
+                    toast.error(`Người dùng không tồn tại!`, {
+                        position: "top-center",
                         autoClose: 500,
                         delay: 10,
                         draggable: true,
@@ -118,6 +120,7 @@ const LoginPage = () => {
             if (arrErrors[0].message) {
                 const message = arrErrors[0].message;
                 toast.error(message.toString(), {
+                    position: "top-center",
                     autoClose: 1000,
                     pauseOnHover: false,
                     draggable: true,

@@ -4,9 +4,9 @@ import Cookies from "js-cookie";
 import useLoadingStore from "../../../redux/store/loading.store";
 // Please have a look at here `https://github.com/axios/axios#request-config` for the full list of configs
 
-const baseURLAPI =
-    "https://thanhtrongsport-be-production.up.railway.app/api/v1/";
-// const baseURLAPI = "http://localhost:8080/api/v1/";
+// const baseURLAPI =
+// "https://thanhtrongsport-be-production.up.railway.app/api/v1/";
+const baseURLAPI = "http://localhost:8080/api/v1/";
 const AxiosClient = axios.create({
     // baseURL: process.env.REACT_APP_API_URL,
     baseURL: baseURLAPI,
@@ -38,6 +38,7 @@ AxiosClient.interceptors.response.use(
         console.log(error);
         if (!error.response) {
             toast.error(error.message, {
+                position: "top-center",
                 autoClose: 1000,
                 delay: 10,
                 draggable: true,
@@ -72,6 +73,7 @@ AxiosClient.interceptors.response.use(
                 }
             }
             toast.error(error.response.data.message, {
+                position: "top-center",
                 autoClose: 1000,
                 delay: 10,
                 draggable: true,

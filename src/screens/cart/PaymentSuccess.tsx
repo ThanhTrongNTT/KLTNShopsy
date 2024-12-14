@@ -19,7 +19,8 @@ const PaymentSuccess = () => {
     const { userInfo } = useAppSelector((state: RootState) => state.user);
     useEffect(() => {
         if (userInfo.id === "") {
-            toast.error("You need to login to view this page.", {
+            toast.error("Bạn cần đăng nhập để xem trang này!", {
+                position: "top-center",
                 autoClose: 1000,
                 pauseOnHover: true,
                 draggable: true,
@@ -34,7 +35,8 @@ const PaymentSuccess = () => {
         if (orderId && resultCode) {
             orderApi.paidOrder(orderId).then((res) => {
                 if (res.result) {
-                    toast.success("Payment successful!", {
+                    toast.success("Thanh toán thành công!", {
+                        position: "top-center",
                         autoClose: 1000,
                         pauseOnHover: true,
                         draggable: true,
