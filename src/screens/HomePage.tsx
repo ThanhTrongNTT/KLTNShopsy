@@ -75,12 +75,12 @@ const HomePage = () => {
     return (
         <div className="bg-white dark:bg-gray-900 dark:text-white duration-200">
             <Hero />
-            <Products />
+            {/* <Products />
             <TopProducts />
             <Banner />
             <Subscribe />
             <Products />
-            <Testimonials />
+            <Testimonials /> */}
         </div>
     );
 };
