@@ -114,17 +114,6 @@ const CheckoutPage = () => {
         return request;
     };
     const onSubmit = async (data: FieldValues) => {
-        if (userInfo.id === "") {
-            toast.warn("Hãy đăng nhập để đặt hàng!", {
-                position: "top-center",
-                autoClose: 1000,
-                pauseOnHover: false,
-                draggable: true,
-                delay: 50,
-            });
-            // navigate("/login");
-            return;
-        }
         const newData = handleCreateOrder(data);
         console.log(newData);
         localStorage.setItem("order", JSON.stringify(newData));
@@ -170,6 +159,19 @@ const CheckoutPage = () => {
             }
         }
     }, [errors]);
+
+    useEffect(() => {
+        if (userInfo.id === "") {
+            toast.error("Bạn cần đăng nhập để xem trang này!", {
+                position: "top-center",
+                autoClose: 1000,
+                pauseOnHover: true,
+                draggable: true,
+                delay: 50,
+            });
+            navigate("/login", { replace: true });
+        }
+    }, [navigate, userInfo]);
 
     return (
         <div className="p-10 w-3/4 text-center mx-auto">

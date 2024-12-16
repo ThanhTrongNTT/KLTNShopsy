@@ -57,6 +57,17 @@ const Cart = () => {
     };
 
     const handleCheckout = () => {
+        if (userInfo.id === "") {
+            toast.warn("Hãy đăng nhập để thanh toán!", {
+                position: "top-center",
+                autoClose: 1000,
+                pauseOnHover: false,
+                draggable: true,
+                delay: 50,
+            });
+            // navigate("/login");
+            return;
+        }
         if (cart.length === 0) {
             toast.error("Không có sản phẩm để thanh toán!", {
                 position: "top-center",
