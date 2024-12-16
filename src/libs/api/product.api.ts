@@ -50,7 +50,7 @@ const productApi = {
         return AxiosClient.get(url);
     },
     getProductItemById: (id: string): Promise<ApiResponse<ProductItem>> => {
-        const url = `products/items/${id}`;
+        const url = `products/item/${id}`;
         return AxiosClient.get(url);
     },
 };
