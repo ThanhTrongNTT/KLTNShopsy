@@ -79,7 +79,7 @@ const Navbar = () => {
                 Cookies.remove(cookieName);
             });
             // await window.location.reload();
-            toast.success("Logout success!", {
+            toast.success("Đăng xuất thành công!", {
                 position: "top-center",
                 autoClose: 1000,
                 delay: 10,

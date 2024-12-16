@@ -52,7 +52,7 @@ const Payment = () => {
                         draggable: true,
                         delay: 50,
                     });
-                    navigate("/profile", { replace: true });
+                    navigate("/", { replace: true });
                 }
             }
         });

@@ -18,6 +18,8 @@ import Label from "../../components/label/Label";
 import { OrderRequest } from "../../libs/api/order.api";
 import { OrderSchema } from "../../libs/utils/schema";
 import { RootState, useAppSelector } from "../../redux/store";
+import couponApi from "../../libs/api/coupon.api";
+import { Coupon } from "../../data/Coupon";
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
@@ -29,6 +31,7 @@ const CheckoutPage = () => {
         handleSubmit,
         control,
         setValue,
+        getValues,
         reset,
         formState: { errors },
     } = useForm({
@@ -92,6 +95,7 @@ const CheckoutPage = () => {
                 paymentMethod: "COD",
                 isPaid: false,
                 user: userInfo,
+                coupon: coupon,
                 address: {
                     addressData: data.address,
                     province: data.province,
@@ -139,9 +143,56 @@ const CheckoutPage = () => {
         setSubtotal(totalPrice);
         setTotal(totalPrice);
     };
+    const [couponList, setCouponList] = useState<Coupon[]>([]);
+    const [coupon, setCoupon] = useState<Coupon | null>(null);
+    const [appliedCoupon, setAppliedCoupon] = useState<string>(""); 
+    const getCouponList = async () => {
+        const res = await couponApi.getCouponList().then((res) => {
+            if (res.result) {
+                setCouponList(res.data);
+            }
+        });
+    };
+    const checkCoupon = () => {
+        const code = getValues("coupon");
+        const coupon = couponList.find((coupon) => coupon.code === code);
+    
+        if (coupon) {
+            if (appliedCoupon) {
+                toast.error("Bạn đã áp dụng một mã giảm giá rồi", {
+                    position: "top-center",
+                    autoClose: 1000,
+                    pauseOnHover: false,
+                    draggable: true,
+                    delay: 50,
+                });
+                return
+            }
+            setCoupon(coupon);
+            setAppliedCoupon(coupon.code);
+            setTotal(total - (coupon.discount / 100) * total);
+            setValue("coupon", ""); 
+            toast.success("Áp dụng mã giảm giá thành công!", {
+                position: "top-center",
+                autoClose: 1000,
+                pauseOnHover: false,
+                draggable: true,
+                delay: 50,
+            });
+        } else {
+            toast.error("Mã giảm giá không tồn tại", {
+                position: "top-center",
+                autoClose: 1000,
+                pauseOnHover: false,
+                draggable: true,
+                delay: 50,
+            });
+        }
+    };
     useEffect(() => {
         handleSubTotalPrice();
         setProvinces(getProvinces());
+        getCouponList();
     }, []);
 
     useEffect(() => {
@@ -413,16 +464,19 @@ const CheckoutPage = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="text-left">
-                                    <Label htmlFor="" className="px-2 text-lg">
-                                        Mã giảm giá
-                                    </Label>
-                                    <Field
-                                        control={control}
-                                        name="coupon"
-                                        id="coupon"
-                                        placeholder="Enter Coupon..."
-                                    />
+                                <div className="flex gap-x-2 content-center">
+                                    <div className="text-left">
+                                        <Label htmlFor="" className="px-2 text-lg">
+                                            Mã giảm giá
+                                        </Label>
+                                        <Field
+                                            control={control}
+                                            name="coupon"
+                                            id="coupon"
+                                            placeholder="Enter Coupon..."
+                                        />
+                                    </div>
+                                    <div className="cursor-pointer items-center w-1/2 bg-blue-500 px-5 py-3 text-white rounded-md mt-6" onClick={()=> checkCoupon()}>Áp dụng</div>
                                 </div>
                                 <button
                                     type="submit"

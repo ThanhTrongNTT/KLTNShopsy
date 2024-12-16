@@ -1,3 +1,4 @@
+import { Coupon } from "./Coupon";
 import { ProductItem } from "./Product";
 import { User } from "./User";
 
@@ -12,6 +13,7 @@ export interface Order {
     status?: string;
     paymentMethod?: string;
     address?: Address | null;
+    coupon?: Coupon | null;
     isPaid?: boolean;
 }
 export const initOrder = {
