@@ -152,7 +152,11 @@ const DetailProductPage = () => {
 
         const stock = selectedProduct.stock;
 
-        return cart.every((item) => item.quantity && item.quantity < stock) && stock > 0;
+        if (stock <= 0) {
+            return false;
+        }
+
+        return cart.every((item) => item.quantity && item.quantity < stock);
     };
     const getProductItemsList = async (id: string) => {
         productApi.getProductItemsList(id).then((res) => {
