@@ -99,16 +99,11 @@ const ProductPage = () => {
         if (activeTab) {
             fetchProducts(activeTab.categoryName, category?.categoryName || "");
         }
-    }, [activeTab, category]);
+    }, [activeTab, category, sort, sortType]);
 
     useEffect(() => {
-        if (sort && sortType) {
-            fetchProducts(
-                activeTab?.categoryName || "",
-                category?.categoryName || ""
-            );
-        }
-    }, [sort, sortType]);
+        fetchProducts(gender || "", categoryName || "");
+    }, []);
 
     return (
         <div className="bg-white dark:bg-[#121212] dark:text-white min-h-screen">
