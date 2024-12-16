@@ -147,7 +147,7 @@ const DetailProductPage = () => {
 
     const isStock = () => {
         if (!selectedProduct || !selectedProduct.stock) {
-            return true;
+            return false;
         }
 
         const stock = selectedProduct.stock;
