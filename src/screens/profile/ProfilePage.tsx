@@ -8,11 +8,16 @@ import { IconPenUnderline } from "../../components/icon/Icon";
 import FieldUpdateProfile from "../../components/field/FieldUpdateProfile";
 import ButtonCancel from "../../components/button/ButtonCancel";
 import ButtonSubmit from "../../components/button/ButtonSubmit";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { User } from "../../data/User";
 import OrderHistory from "./OrderHistory";
 import { Order } from "../../data/Order";
 import orderApi from "../../libs/api/order.api";
+import { Button } from "flowbite-react";
+import { Modal } from "flowbite-react";
+import ChangePassword from "./ChangePassword";
+import { toast } from "react-toastify";
+import userApi, { ChangePasswordRequest } from "../../libs/api/user.api";
 
 const ProfilePage = () => {
     const [disable, setDisable] = useState(true);
@@ -46,6 +51,47 @@ const ProfilePage = () => {
         setDisable(true);
     };
 
+    const [modalShow, setModalShow] = useState(false);
+
+    const onCloseModal = () => {
+        setModalShow(false);
+    };
+
+    const onClickModal = () => {
+        setModalShow(true);
+    };
+
+    const handleChangePassword = async (data: FieldValues) => {
+        const { password, newPassword, confirmPassword } = data;
+        const changePasswordRequest: ChangePasswordRequest = {
+            email: userInfo?.email || "",
+            oldPassword: password,
+            newPassword,
+        };
+        await userApi.changePassword(changePasswordRequest).then((res) => {
+            if (res.result) {
+                if (res.data) {
+                    toast.success("Đổi mật khẩu thành công", {
+                        position: "top-center",
+                        autoClose: 1000,
+                        pauseOnHover: false,
+                        draggable: true,
+                        delay: 50,
+                    });
+                } else {
+                    toast.error("Mật khẩu cũ không đúng", {
+                        position: "top-center",
+                        autoClose: 1000,
+                        pauseOnHover: false,
+                        draggable: true,
+                        delay: 50,
+                    });
+                }
+                onCloseModal();
+            }
+        });
+    };
+
     useEffect(() => {
         if (userInfo.id === "") {
             navigate("/login");
@@ -59,6 +105,14 @@ const ProfilePage = () => {
     }
     return (
         <div className="max-w-7xl flex flex-col gap-[30px] lg:flex-row lg:gap-[33px] mx-auto py-10 px-5 h-screen dark:bg-gray-900">
+            <Modal show={modalShow} onClose={onCloseModal}>
+                <Modal.Header>Đổi mật khẩu</Modal.Header>
+                <Modal.Body>
+                    <ChangePassword
+                        handleChangePassword={handleChangePassword}
+                    />
+                </Modal.Body>
+            </Modal>
             <CardAvt />
             <div className="flex-1 px-5 lg:px-0">
                 <div className="flex justify-between ">
@@ -133,6 +187,12 @@ const ProfilePage = () => {
                             </div>
                         </div>
                     </form>
+                    <button
+                        onClick={onClickModal}
+                        className="text-white px-5 py-2 bg-gradient-to-brtext-lg font-semibold rounded-md hover:bg-gradient-to-br bg-gradient-to-br from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 mb-5"
+                    >
+                        Đổi mật khẩu
+                    </button>
                     <OrderHistory />
                 </div>
             </div>
