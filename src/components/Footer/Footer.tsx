@@ -58,7 +58,7 @@ const Footer = () => {
 
           {/* Footer Links */}
           <div className="grid grid-cols-2 sm:grid-cols-3 col-span-2 md:pl-10">
-            <div>
+            {/* <div>
               <div className="py-8 px-4">
                 <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
                   Important Links
@@ -74,8 +74,8 @@ const Footer = () => {
                   ))}
                 </ul>
               </div>
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <div className="py-8 px-4">
                 <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
                   Links
@@ -91,7 +91,7 @@ const Footer = () => {
                   ))}
                 </ul>
               </div>
-            </div>
+            </div> */}
 
             {/* social links */}
 
@@ -114,7 +114,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center gap-3 mt-3">
                   <FaMobileAlt />
-                  <p>+84 36524847649</p>
+                  <p>+84 3652484764</p>
                 </div>
               </div>
             </div>

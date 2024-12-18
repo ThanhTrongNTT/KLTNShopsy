@@ -89,7 +89,9 @@ const CartItem = ({
                     <span className="mx-2 truncate">
                         {cartItem.product?.productName}
                     </span>
-                    <span className="truncate">Màu: {cartItem.color?.name} Kích cỡ: {cartItem.size}</span>
+                    <span className="truncate">
+                        Màu: {cartItem.color?.name} Kích cỡ: {cartItem.size}
+                    </span>
                 </div>
                 <div className="flex gap-2 col-span-2">
                     <div onClick={minusProduct}>
