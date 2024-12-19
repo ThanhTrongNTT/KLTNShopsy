@@ -142,7 +142,7 @@ const DetailProductPage = () => {
     };
     const handleClickSize = (item: ProductItemInterface) => {
         console.log(item);
-        
+
         setSelectedProduct(item);
         if (item.size) setSelectedSize(item.size);
     };
@@ -154,7 +154,9 @@ const DetailProductPage = () => {
 
         const stock = selectedProduct.stock;
 
-        const existingItem = cart.find(item => item.productItem.id === selectedProduct.id);
+        const existingItem = cart.find(
+            (item) => item.productItem.id === selectedProduct.id
+        );
         if (existingItem) {
             return existingItem.quantity < stock;
         }
@@ -369,7 +371,7 @@ const DetailProductPage = () => {
                                 </p>
                             </div>
                             <div className="ml-auto h-fit flex flex-wrap gap-4">
-                                <button
+                                {/* <button
                                     type="button"
                                     onClick={() => {
                                         toast.warning(
@@ -397,7 +399,7 @@ const DetailProductPage = () => {
                                             data-original="#000000"
                                         ></path>
                                     </svg>
-                                </button>
+                                </button> */}
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(true)}
