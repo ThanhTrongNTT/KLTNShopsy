@@ -55,7 +55,19 @@ const Payment = () => {
                     navigate("/", { replace: true });
                 }
             }
+        }).catch((error) => {
+            if (error.response.data.message === "Coupon đã hết hạn sử dụng") {
+                
+                console.log("Error: ", error);
+            }
         });
+    };
+
+    const handleBackToCheckout = () => {
+        orderWithItem.order.coupon = null;
+                setOrderWithItem(orderWithItem);
+                localStorage.setItem("order", JSON.stringify(orderWithItem));
+        navigate("/order", { replace: true });
     };
 
     useEffect(() => {
@@ -143,7 +155,8 @@ const Payment = () => {
                         )}
                     </div>
                 </div>
-                <div className="flex justify-center p-10">
+                <div className="flex justify-center p-10 gap-x-10">
+                    <button onClick={handleBackToCheckout} className="bg-blue-500 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all">Quay về trang thanh toán</button>
                     <button
                         className="bg-blue-500 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all"
                         onClick={handleOrderConfirm}

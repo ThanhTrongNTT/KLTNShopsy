@@ -54,10 +54,6 @@ const Footer = () => {
               <img src={footerLogo} alt="" className="max-w-[50px]" />
               Shopsy
             </h1>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum in
-              beatae ea recusandae blanditiis veritatis.
-            </p>
           </div>
 
           {/* Footer Links */}
@@ -100,7 +96,7 @@ const Footer = () => {
             {/* social links */}
 
             <div>
-              <div className="flex items-center gap-3 mt-6">
+              {/* <div className="flex items-center gap-3 mt-6">
                 <a href="#">
                   <FaInstagram className="text-3xl" />
                 </a>
@@ -110,15 +106,15 @@ const Footer = () => {
                 <a href="#">
                   <FaLinkedin className="text-3xl" />
                 </a>
-              </div>
+              </div> */}
               <div className="mt-6">
                 <div className="flex items-center gap-3">
                   <FaLocationArrow />
-                  <p>Noida, Uttar Pradesh</p>
+                  <p>Ho Chi Minh, Viet Nam</p>
                 </div>
                 <div className="flex items-center gap-3 mt-3">
                   <FaMobileAlt />
-                  <p>+91 123456789</p>
+                  <p>+84 36524847649</p>
                 </div>
               </div>
             </div>

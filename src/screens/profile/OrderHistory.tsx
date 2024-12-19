@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Pagination } from "flowbite-react";
 import { Order } from "../../data/Order";
 import orderApi from "../../libs/api/order.api";
+import { formatDate } from "../../libs/utils/date";
 export const STATUS_OPTIONS = [
     { label: "Order Placed", value: "ORDER_PLACED", color: "bg-blue-500" },
     { label: "Paid", value: "PAID", color: "bg-green-500" },
@@ -33,12 +34,12 @@ const OrderHistory = () => {
                 userInfo?.email || "",
                 currentPage - 1,
                 5,
-                "createdAt",
+                "modifiedDate",
                 "desc"
             )
             .then((res) => {
                 setOrderHistory(res.data.items);
-                setTotalPage(res.data.totalPages);
+                setTotalPage(res.data.totalItems / 5);
             });
     };
     useEffect(() => {
@@ -76,6 +77,9 @@ const OrderHistory = () => {
                                 </th>
                                 <th scope="col" className="p-3">
                                     Is Paid
+                                </th>
+                                <th scope="col" className="p-3">
+                                    Order At
                                 </th>
                             </tr>
                         </thead>
@@ -133,6 +137,12 @@ const OrderHistory = () => {
                                             className="py-4 px-6 font-medium whitespace-nowrap"
                                         >
                                             {order.isPaid ? "Paid" : "Not Paid"}
+                                        </th>
+                                        <th
+                                            scope="row"
+                                            className="py-4 px-6 font-medium whitespace-nowrap"
+                                        >
+                                            {formatDate(order.createdDate || '')}
                                         </th>
                                     </tr>
                                 );

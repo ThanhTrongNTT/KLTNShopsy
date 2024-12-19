@@ -15,6 +15,7 @@ export interface Order {
     address?: Address | null;
     coupon?: Coupon | null;
     isPaid?: boolean;
+    createdDate?: string;
 }
 export const initOrder = {
     id: "",

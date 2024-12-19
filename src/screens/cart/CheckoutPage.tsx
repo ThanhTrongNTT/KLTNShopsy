@@ -22,6 +22,7 @@ import couponApi from "../../libs/api/coupon.api";
 import { Coupon } from "../../data/Coupon";
 
 const CheckoutPage = () => {
+    const order = JSON.parse(localStorage.getItem("order") || "{}");
     const navigate = useNavigate();
     const cart = useAppSelector((state: RootState) => state.cart.items);
     const { userInfo } = useAppSelector((state: RootState) => state.user);
@@ -32,21 +33,22 @@ const CheckoutPage = () => {
         control,
         setValue,
         getValues,
+        clearErrors,
         reset,
         formState: { errors },
     } = useForm({
         resolver: yupResolver(OrderSchema),
         mode: "onSubmit",
         defaultValues: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            phoneNumber: "",
-            province: "",
-            district: "",
-            ward: "",
-            address: "",
-            note: "",
+            firstName: order.order?.address?.firstName || "",
+            lastName: order.order?.address?.lastName || "",
+            email: order.order?.address?.email || "",
+            phoneNumber: order.order?.address?.phone || "",
+            province: order.order?.address?.province || "",
+            district: order.order?.address?.district || "",
+            ward: order.order?.address?.ward || "",
+            address: order.order?.address?.addressData || "",
+            note: order.order?.note || "",
             coupon: "",
         },
     });
@@ -63,6 +65,7 @@ const CheckoutPage = () => {
             (city) => city.name === e.target.value
         );
         setSelectedProvince(selectedCity);
+        clearErrors("province");
     };
 
     const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,6 +73,7 @@ const CheckoutPage = () => {
             (district) => district.name === e.target.value
         );
         setSelectedDistrict(selectedDistrict);
+        clearErrors("district");
     };
     useEffect(() => {
         if (selectedProvince) {
@@ -87,7 +91,7 @@ const CheckoutPage = () => {
         const request: OrderRequest = {
             order: {
                 productsCount: cart.length,
-                note: "This is a test order",
+                note: data.note,
                 subTotal: subtotal,
                 tax: 0,
                 total: total,
@@ -121,16 +125,6 @@ const CheckoutPage = () => {
         const newData = handleCreateOrder(data);
         console.log(newData);
         localStorage.setItem("order", JSON.stringify(newData));
-        // await orderApi.createOrder(newData).then((res) => {
-        //     if (res.result) {
-        //         toast.success("Order successfully", {
-        //             autoClose: 1000,
-        //             pauseOnHover: false,
-        //             draggable: true,
-        //             delay: 50,
-        //         });
-        //     }
-        // });
         navigate("/payment");
         console.log(data);
     };
@@ -338,7 +332,7 @@ const CheckoutPage = () => {
                                             className=""
                                             control={control}
                                             setValue={setValue}
-                                            dropdownLabel="Chọn tỉnh/thành phố"
+                                            dropdownLabel={order.order?.address?.province || "Chọn tỉnh/thành phố"}
                                             name="province"
                                             list={provinces}
                                             onChange={handleProvinceChange}
@@ -359,7 +353,7 @@ const CheckoutPage = () => {
                                             className=""
                                             control={control}
                                             setValue={setValue}
-                                            dropdownLabel="Chọn quận/huyện"
+                                            dropdownLabel={order.order?.address?.district || "Chọn quận/huyện"}
                                             name="district"
                                             list={districts}
                                             error={
@@ -375,11 +369,11 @@ const CheckoutPage = () => {
                                             Phường/Xã
                                         </Label>
                                         <DropdownAddress
-                                            onChange={() => {}}
+                                            onChange={() => { clearErrors("ward");}}
                                             className=""
                                             control={control}
                                             setValue={setValue}
-                                            dropdownLabel="Chọn phường/xã"
+                                            dropdownLabel={order.order?.address?.ward || "Chọn phường/xã"}
                                             name="ward"
                                             list={wards}
                                             error={errors.ward?.message ?? ""}

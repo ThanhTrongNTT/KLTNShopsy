@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import ImageCustom from "../Image/ImageCustom";
 import { IconCheck, IconPen } from "../icon/Icon";
 import classNames from "../../libs/utils/classNames";
+import { formatDate } from "../../libs/utils/date";
 
 const CardAvt = () => {
     const { userInfo } = useSelector((state: RootState) => state.user);
@@ -75,8 +76,8 @@ const CardAvt = () => {
         // }
     };
     useEffect(() => {
-        setBaseImg(userInfo?.userProfile?.avatar.url);
-    }, [userInfo?.userProfile?.avatar.url]);
+        setBaseImg(userInfo?.userProfile?.avatar?.url || '');
+    }, [userInfo?.userProfile?.avatar?.url]);
 
     // const onSubmit = ({ avatar }: any) => console.log(avatar);
     return (
@@ -129,7 +130,7 @@ const CardAvt = () => {
                             Thành viên kể từ
                         </span>
                         <span className=" text-grayScale-c4">
-                            {userInfo.modifiedDate}
+                            {formatDate(userInfo.modifiedDate || '')}
                         </span>
                     </div>
                     <button

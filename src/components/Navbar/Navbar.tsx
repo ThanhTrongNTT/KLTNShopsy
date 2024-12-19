@@ -107,7 +107,7 @@ const Navbar = () => {
     useEffect(() => {
         fetchCategories();
 
-        localStorage.removeItem("order");
+        // localStorage.removeItem("order");
     }, [isLogin]);
     return (
         <div className="shadow-md bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40">
