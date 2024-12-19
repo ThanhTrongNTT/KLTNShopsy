@@ -141,6 +141,8 @@ const DetailProductPage = () => {
         });
     };
     const handleClickSize = (item: ProductItemInterface) => {
+        console.log(item);
+        
         setSelectedProduct(item);
         if (item.size) setSelectedSize(item.size);
     };
@@ -152,11 +154,14 @@ const DetailProductPage = () => {
 
         const stock = selectedProduct.stock;
 
+        const existingItem = cart.find(item => item.productItem.id === selectedProduct.id);
+        if (existingItem) {
+            return existingItem.quantity < stock;
+        }
         if (stock <= 0) {
             return false;
         }
-
-        return cart.every((item) => item.quantity && item.quantity < stock);
+        return true;
     };
     const getProductItemsList = async (id: string) => {
         productApi.getProductItemsList(id).then((res) => {
@@ -487,7 +492,7 @@ const DetailProductPage = () => {
                                             : sizeList.map((size, index) => (
                                                   <button
                                                       key={index}
-                                                      className={` cursor-not-allowed px-4 py-2 border rounded-lg text-sm font-medium`}
+                                                      className={`border-gray-600 line-through bg-gray-200 cursor-not-allowed px-4 py-2 border rounded-lg text-sm font-medium`}
                                                   >
                                                       {size}
                                                   </button>

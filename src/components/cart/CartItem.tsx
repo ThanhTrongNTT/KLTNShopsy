@@ -84,11 +84,12 @@ const CartItem = ({
                         rounded
                     />
                 </div>
-                <div className="col-span-5">
+                <div className="col-span-5 flex flex-col">
                     {/* <span className="mx-2">{cartItem.product.productName}</span> */}
-                    <span className="mx-2">
+                    <span className="mx-2 truncate">
                         {cartItem.product?.productName}
                     </span>
+                    <span className="truncate">Màu: {cartItem.color?.name} Kích cỡ: {cartItem.size}</span>
                 </div>
                 <div className="flex gap-2 col-span-2">
                     <div onClick={minusProduct}>
